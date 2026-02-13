@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  php:
+    environment:
+      APP_ENV: dev
+      XDEBUG_MODE: debug
+      XDEBUG_START_WITH_REQUEST: yes
+
+# This service is added in override file to avoid running it in production environment.
+# It will be used for development and testing purposes only.
+# It is a simple SMTP server that will catch all emails sent by the application and display them in a web interface.
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
