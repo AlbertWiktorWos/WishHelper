@@ -1,5 +1,5 @@
 # Whis Helper
-WishMatch is a web application designed to help users manage personal wishlists and discover meaningful gift ideas based on shared interests and categories.
+WishHelper is a web application designed to help users manage personal wishlists and discover meaningful gift ideas based on shared interests and categories.
 
 ## Alpha
 The Alpha version focuses on building a stable technical foundation for future development. At this stage, the application implements a secure authentication system, a structured domain model, and a fully functional API layer prepared for wishlist management and matching logic.
