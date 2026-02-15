@@ -1,18 +1,98 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
-        {% endblock %}
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}WishHelper{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+
+    {# fonts #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-semibold" href="{{ path('app_landing') }}">
+            <img src="{{ asset('build/images/logo.png') }}" alt="🎁"> WishHelper
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_landing') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Wish List</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Find Gifts</a>
+                </li>
+            </ul>
+
+            <div class="d-flex gap-2">
+                {% if app.user %}
+{#                    {{ path('app_profile') }}#}
+                    <a href="#" class="btn btn-outline-primary">
+                        Profile
+                    </a>
+{#                    {{ path('app_logout') }}#}
+                    <a href="#" class="btn btn-outline-secondary">
+                        Logout
+                    </a>
+                {% else %}
+{#                    {{ path('app_login') }}#}
+                    <a href="#" class="btn btn-outline-primary">
+                        Log in
+                    </a>
+{#                    {{ path('app_register') }}#}
+                    <a href="#" class="btn btn-accent">
+                        Sign up
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="flex-grow-1">
+
+    <div class="container mt-4">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} shadow-sm">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    {% block body %}{% endblock %}
+</main>
+
+<footer class="mt-auto border-top py-4 bg-light">
+    <div class="container text-center small text-muted">
+        © {{ "now"|date("Y") }} WishHelper - Demo Project (Symfony + Vue)
+    </div>
+</footer>
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
+</body>
 </html>

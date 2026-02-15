@@ -1,0 +1,35 @@
+/* 1. Bootstrap */
+@import "variables";
+@import "~bootstrap/scss/bootstrap";
+
+/* Accent button */
+.btn-accent {
+    background-color: $wh-peach-500;
+    color: white;
+    border: none;
+
+    &:hover {
+        background-color: $wh-peach-700;
+        color: white;
+    }
+}
+
+/* sections */
+.section-soft {
+    background-color: $wh-beige-100;
+}
+
+.section-muted {
+    background-color: $wh-sage-50;
+}
+
+/* A card with a slight hover effect */
+.card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: $box-shadow-lg;
+    }
+}
+

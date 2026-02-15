@@ -1,0 +1,84 @@
+/* === COLOR PALETTE === */
+
+$wh-sage-50:  #f4f6f3;
+$wh-sage-100: #e3e8e2;
+$wh-sage-300: #a8b8a3;
+$wh-sage-500: #7a8f74;  // PRIMARY
+$wh-sage-700: #5f6f59;
+$wh-sage-900: #3e4a3b;
+
+$wh-peach-100: #f7e3d7;
+$wh-peach-300: #f2c3a7;
+$wh-peach-500: #e6a57e; // ACCENT
+$wh-peach-700: #c67d54;
+
+$wh-beige-50:  #fbf8f4;
+$wh-beige-100: #f3ece5;
+$wh-beige-200: #e6ddd4;
+
+$wh-dark:  #2f2f2f;
+$wh-muted: #7a7a7a;
+
+
+/* === BOOTSTRAP OVERRIDES === */
+
+/* Main framework colors */
+$primary:       $wh-sage-500;
+$secondary:     $wh-beige-200;
+$success:       #6c9a6b;
+$info:          #8aa6a3;
+$warning:       #e6b65c;
+$danger:        #c86b6b;
+$light:         $wh-beige-50;
+$dark:          $wh-dark;
+
+/* Body */
+$body-bg:       $wh-beige-50;
+$body-color:    $wh-dark;
+
+/* Links */
+$link-color:              $wh-sage-700;
+$link-hover-color:        $wh-sage-900;
+$link-decoration:         none;
+
+/* Border */
+$border-color:            #e8e2db;
+$border-radius:           0.75rem;
+$border-radius-lg:        1rem;
+
+/* Shadows */
+$box-shadow-sm: 0 2px 6px rgba(0,0,0,0.04);
+$box-shadow:    0 6px 20px rgba(0,0,0,0.06);
+$box-shadow-lg: 0 12px 32px rgba(0,0,0,0.08);
+
+/* Buttons */
+$btn-border-radius: 0.75rem;
+$btn-padding-y:     0.6rem;
+$btn-padding-x:     1.2rem;
+$btn-font-weight:   500;
+
+/* Forms */
+$input-border-radius: 0.75rem;
+$input-border-color:  #ddd5cc;
+$input-focus-border-color: $wh-sage-500;
+$input-focus-box-shadow: 0 0 0 0.2rem rgba(122, 143, 116, 0.15);
+
+/* Cards */
+$card-border-radius: 1rem;
+$card-border-color:  #e8e2db;
+$card-box-shadow:    $box-shadow;
+
+/* Navbar */
+$navbar-light-color:                $wh-dark;
+$navbar-light-hover-color:          $wh-sage-700;
+$navbar-light-active-color:         $wh-sage-900;
+$navbar-light-brand-color:          $wh-sage-700;
+$navbar-light-brand-hover-color:    $wh-sage-900;
+
+/* Typography */
+$font-family-sans-serif: 'Inter', system-ui, -apple-system, sans-serif;
+$headings-font-weight: 600;
+$headings-color: $wh-dark;
+
+/* Spacing */
+$spacer: 1rem;
