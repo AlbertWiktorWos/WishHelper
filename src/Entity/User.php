@@ -6,7 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert; // assertions
     operations: [
         new Get(),
         new GetCollection(),
-        new Put(security: 'object == user'),
+        new Patch(security: 'object == user'),
         new Delete(security: 'object == user'), // later we add admin role too
     ],
     normalizationContext: ['groups' => ['user:read']],
@@ -64,6 +64,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $avatar = null;
 
     #[ORM\Column]
+    #[Groups(['user:read', 'user:write'])]
     private ?bool $verified = null;
 
     #[ORM\Column]

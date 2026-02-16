@@ -3,7 +3,6 @@ version: '3.8'
 services:
   php:
     environment:
-      APP_ENV: dev
       XDEBUG_MODE: debug
       XDEBUG_START_WITH_REQUEST: yes
 

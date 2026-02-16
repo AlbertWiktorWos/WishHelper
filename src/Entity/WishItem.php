@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\WishItemRepository;
+use App\Validator\IsValidLink;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -67,6 +68,7 @@ class WishItem
     #[Groups(['wish:read', 'wish:write'])]
     #[Assert\Url]
     #[Assert\Length(max: 255)]
+    #[IsValidLink]
     private ?string $link = null;
 
     #[ORM\Column]

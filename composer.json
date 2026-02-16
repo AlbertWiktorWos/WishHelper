@@ -88,6 +88,7 @@
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^4.3",
         "friendsofphp/php-cs-fixer": "^3.94",
+        "mtdowling/jmespath.php": "^2.8",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-doctrine": "^2.0",
         "phpunit/phpunit": "^11.5",
@@ -97,6 +98,7 @@
         "symfony/maker-bundle": "^1.66",
         "symfony/stopwatch": "6.4.*",
         "symfony/web-profiler-bundle": "6.4.*",
+        "zenstruck/browser": "^1.10",
         "zenstruck/foundry": "^2.9"
     }
 }
