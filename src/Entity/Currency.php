@@ -3,10 +3,20 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CurrencyRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+    ],
+    normalizationContext: ['groups' => ['currency:read']]
+)]
 #[ORM\Entity(repositoryClass: CurrencyRepository::class)]
 #[ApiResource]
 class Currency
@@ -17,18 +27,23 @@ class Currency
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read'])]
     private ?string $symbol = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 6)]
+    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read'])]
     private ?string $exchangeRate = null;
 
     #[ORM\Column]
+    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     public function getId(): ?int

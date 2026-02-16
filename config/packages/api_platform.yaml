@@ -1,7 +1,10 @@
 api_platform:
-    title: Hello API Platform
+    title: WishHelper API Platform
     version: 1.0.0
     defaults:
+        pagination_enabled: true
+        pagination_items_per_page: 20
+        pagination_maximum_items_per_page: 50
         stateless: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']

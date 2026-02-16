@@ -3,11 +3,20 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CountryRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+    ],
+    normalizationContext: ['groups' => ['country:read']]
+)]
 #[ORM\Entity(repositoryClass: CountryRepository::class)]
-#[ApiResource]
 class Country
 {
     #[ORM\Id]
@@ -16,22 +25,27 @@ class Country
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['country:read', 'user:read', 'currency:read'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['country:read', 'user:read', 'currency:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['country:read', 'user:read', 'currency:read'])]
     private ?string $flag = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['country:read', 'user:read', 'currency:read'])]
     private ?string $continent = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['country:read', 'user:read'])]
     private ?Currency $currency = null;
 
     public function getId(): ?int
@@ -90,6 +104,12 @@ class Country
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static

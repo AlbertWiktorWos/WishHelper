@@ -3,11 +3,20 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+    ],
+    normalizationContext: ['groups' => ['category:read']]
+)]
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
-#[ApiResource]
 class Category
 {
     #[ORM\Id]
@@ -16,12 +25,14 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['category:read', 'wish:read', 'user:read'])]
     private ?string $name = null;
 
     /**
      * In first version of the app we will use this field to store the name of the icon from bootstrap, but in future we can change it to store the path to the uploaded image file.
      */
     #[ORM\Column(length: 255)]
+    #[Groups(['category:read', 'wish:read', 'user:read'])]
     private ?string $icon = null;
 
     public function getId(): ?int

@@ -2,15 +2,44 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\WishItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert; // assertions
 
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(security: 'object.getOwner() == user'),
+        new Delete(security: 'object.getOwner() == user'), // later we add admin role too
+    ],
+    normalizationContext: ['groups' => ['wish:read']],
+    denormalizationContext: ['groups' => ['wish:write']],
+    security: "is_granted('ROLE_USER')",
+)]
+#[ApiFilter(SearchFilter::class, properties: [
+    'category' => 'exact',
+    'tags' => 'exact',
+    'owner' => 'exact',
+])]
+#[ApiFilter(RangeFilter::class, properties: [
+    'price',
+])]
 #[ORM\Entity(repositoryClass: WishItemRepository::class)]
-#[ApiResource]
 class WishItem
 {
     #[ORM\Id]
@@ -19,38 +48,55 @@ class WishItem
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['wish:read', 'wish:write'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['wish:read', 'wish:write'])]
+    #[Assert\Length(max: 1000)]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['wish:read', 'wish:write'])]
+    #[Assert\PositiveOrZero]
     private ?string $price = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['wish:read', 'wish:write'])]
+    #[Assert\Url]
+    #[Assert\Length(max: 255)]
     private ?string $link = null;
 
     #[ORM\Column]
+    #[Groups(['wish:read', 'wish:write'])]
     private ?bool $shared = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    #[Groups(['wish:read'])]
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['wish:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['wish:read', 'wish:write'])]
     private ?Category $category = null;
 
     /**
      * @var Collection<int, Tag>
+     *                           we add cascade persist to automatically save new tags when we add them to a wish item, without needing to save them separately. This is useful for creating new tags on the fly when adding them to a wish item.
      */
-    #[ORM\ManyToMany(targetEntity: Tag::class)]
+    #[ORM\ManyToMany(targetEntity: Tag::class, cascade: ['persist'])]
+    #[Groups(['wish:read', 'wish:write'])]
     private Collection $tags;
 
     #[ORM\ManyToOne(inversedBy: 'wishItems')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['wish:read'])]
     private ?User $owner = null;
 
     #[ORM\ManyToOne]
@@ -60,6 +106,7 @@ class WishItem
     public function __construct()
     {
         $this->tags = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -127,7 +174,7 @@ class WishItem
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -149,6 +196,12 @@ class WishItem
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getCategory(): ?Category
