@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\TagRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert; // assertions
 
@@ -12,8 +13,8 @@ use Symfony\Component\Validator\Constraints as Assert; // assertions
     normalizationContext: ['groups' => ['tag:read']],
     denormalizationContext: ['groups' => ['tag:write']]
 )]
+#[UniqueEntity('name')]
 #[ORM\Entity(repositoryClass: TagRepository::class)]
-#[ApiResource]
 class Tag
 {
     #[ORM\Id]
@@ -22,7 +23,7 @@ class Tag
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['tag:read', 'wish:read', 'user:read', 'write:read', 'wish:write'])]
+    #[Groups(['tag:read', 'tag:write', 'wish:read', 'user:read', 'wish:write', 'user:write'])]
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
     private ?string $name = null;

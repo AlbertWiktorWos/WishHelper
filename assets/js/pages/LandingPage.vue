@@ -30,7 +30,9 @@
         <div class="row text-center g-4">
           <div class="col-md-4">
             <div class="card card-hover h-100 p-4">
-              <div class="mb-3 fs-1">📝</div>
+              <div class="mb-3 fs-1">
+                <img :src="require('@images/hiw/hiw-wishlist.png')" alt="📝List" class="hw-img" />
+              </div>
               <h5 class="fw-semibold">Create Wish List</h5>
               <p class="text-muted small">
                 Add gifts, define categories, tags and price ranges.
@@ -39,7 +41,10 @@
           </div>
           <div class="col-md-4">
             <div class="card card-hover h-100 p-4">
-              <div class="mb-3 fs-1">🔎</div>
+              <div class="mb-3 fs-1">
+                <img :src="require('@images/hiw/hiw-search.png')" alt="🔎Search" class="hw-img" />
+
+              </div>
               <h5 class="fw-semibold">Find Gift Ideas</h5>
               <p class="text-muted small">
                 Search for other users' wishes by categories and tags.
@@ -48,7 +53,9 @@
           </div>
           <div class="col-md-4">
             <div class="card card-hover h-100 p-4">
-              <div class="mb-3 fs-1">🤝</div>
+              <div class="mb-3 fs-1">
+                <img :src="require('@images/hiw/hiw-check.png')" alt="🤝Match" class="hw-img" />
+              </div>
               <h5 class="fw-semibold">Smart Matching</h5>
               <p class="text-muted small">
                 Matching algorithm based on categories, tags and budget.
@@ -84,5 +91,8 @@ export default {
 </script>
 
 <style scoped>
+ .hw-img {
+   max-width: 200px;
+ }
 
 </style>
