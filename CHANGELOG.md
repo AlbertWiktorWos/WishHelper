@@ -1,4 +1,7 @@
 ## [16.02.2025]
+- Login and registration with validation and error messages and country selector with store and api service
+- installing axios and configuration for api calls
+## [16.02.2025]
 - Simple tests for api resources and LinkValidator
 - ApiResource and validation config for entites with register/login DTO + Factories and Fixture for all entities
 - Entities: Category, Country, Currency, Tag, User, WishItem

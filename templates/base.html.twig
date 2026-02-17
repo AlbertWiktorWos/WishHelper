@@ -37,31 +37,30 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('app_landing') }}">Home</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Wish List</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Find Gifts</a>
-                </li>
+                {% if app.user %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Wish List</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Find Gifts</a>
+                    </li>
+                {% endif %}
             </ul>
 
             <div class="d-flex gap-2">
                 {% if app.user %}
-{#                    {{ path('app_profile') }}#}
+                    {#                    {{ path('app_profile') }}#}
                     <a href="#" class="btn btn-outline-primary">
                         Profile
                     </a>
-{#                    {{ path('app_logout') }}#}
-                    <a href="#" class="btn btn-outline-secondary">
+                    <a href="{{ path('app_logout') }}" class="btn btn-outline-secondary">
                         Logout
                     </a>
                 {% else %}
-{#                    {{ path('app_login') }}#}
-                    <a href="#" class="btn btn-outline-primary">
+                    <a href="{{ path('app_login') }}" class="btn btn-outline-primary">
                         Log in
                     </a>
-{#                    {{ path('app_register') }}#}
-                    <a href="#" class="btn btn-accent">
+                    <a href="{{ path('app_register') }}" class="btn btn-accent">
                         Sign up
                     </a>
                 {% endif %}

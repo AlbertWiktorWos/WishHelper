@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert; // assertions
         new Get(),
         new GetCollection(),
         new Patch(security: 'object == user'),
-        new Delete(security: 'object == user'), // later we add admin role too
+        new Delete(security: 'object == user'), // later we will add admin role too
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']]
@@ -65,11 +65,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     #[Groups(['user:read', 'user:write'])]
-    private ?bool $verified = null;
+    private bool $verified = false;
 
     #[ORM\Column]
     #[Groups(['user:read', 'user:write'])]
-    private ?bool $notify = null;
+    private bool $notify = false;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -205,7 +205,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function isVerified(): ?bool
+    public function isVerified(): bool
     {
         return $this->verified;
     }
@@ -217,7 +217,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function isNotify(): ?bool
+    public function isNotify(): bool
     {
         return $this->notify;
     }

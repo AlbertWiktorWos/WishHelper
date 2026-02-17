@@ -93,7 +93,7 @@ class AppFixtures extends Fixture
         // we add admin user
         UserFactory::createOne([
             'email' => 'admin@admin.com',
-            'password' => 'admin',
+            'password' => password_hash('admin', PASSWORD_BCRYPT),
             'categories' => [$categories[array_rand($categories)]],
             'country' => $countries[array_rand($countries)],
         ]);

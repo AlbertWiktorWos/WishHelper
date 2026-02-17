@@ -2,6 +2,7 @@
 
 namespace App\Dto;
 
+use App\Validator\IsValidCountry;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class RegisterUserDto
@@ -18,6 +19,7 @@ class RegisterUserDto
     #[Assert\Length(max: 50, maxMessage: 'The nickname can have a maximum of {{ limit }} characters')]
     public string $nickName;
 
+    #[IsValidCountry]
     #[Assert\NotBlank(message: 'The country must be chosen')]
     public string $country; // This will be the country ID
 

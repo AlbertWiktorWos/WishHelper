@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}WishHelper – Login!{% endblock %}
+
+{% block body %}
+    <div id="app"
+         data-page="login"
+         data-props='{{ {
+             csrfToken: csrf_token("authenticate"),
+             lastEmail: email,
+             loginPath: path("app_login"),
+             errors: error ? error.messageKey|trans(error.messageData, "security") : null
+         }|json_encode|e("html_attr") }}'>
+    </div>
+{% endblock %}

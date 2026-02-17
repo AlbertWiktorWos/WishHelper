@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}WishHelper – Registration!{% endblock %}
+
+{% block body %}
+    <div id="app"
+         data-page="register"
+         data-props='{{ {
+             csrfToken: csrf_token("authenticate"),
+             registerPath: path("app_register"),
+             errors: errors ? errors : null
+         }|json_encode|e("html_attr") }}'>
+    </div>
+{% endblock %}

@@ -16,6 +16,17 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            stateless: false # we want to use sessions
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+                username_parameter: email #field with username (to authenticate field)
+                password_parameter: password #password field
+            logout:
+                path: app_logout
+                # where to redirect after logout
+                # target: app_any_route
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

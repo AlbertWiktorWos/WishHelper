@@ -1,10 +1,6 @@
 version: '3.8'
 
 services:
-  php:
-    environment:
-      XDEBUG_MODE: debug
-      XDEBUG_START_WITH_REQUEST: yes
 
 # This service is added in override file to avoid running it in production environment.
 # It will be used for development and testing purposes only.
