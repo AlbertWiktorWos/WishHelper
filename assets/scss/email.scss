@@ -1,0 +1,88 @@
+@import "variables";
+
+/* Reset */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: $wh-beige-50;
+    font-family: Arial, Helvetica, sans-serif;
+    color: $wh-dark;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+img {
+    border: 0;
+    display: block;
+    line-height: 0;
+}
+
+/* Container */
+.email-wrapper {
+    background-color: $wh-beige-50;
+    padding: 40px 0;
+}
+
+.email-card {
+    width: 600px;
+    background-color: #ffffff;
+    border-radius: 12px;
+}
+
+/* Header */
+.email-header {
+    padding: 30px 20px;
+    text-align: center;
+}
+.email-header img {
+    margin: auto;
+}
+
+/* Content */
+.email-body {
+    padding: 20px 40px;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.email-body h1,
+.email-body h2,
+.email-body h3 {
+    margin-top: 0;
+    color: $wh-dark;
+}
+
+.email-body p {
+    margin: 0 0 16px 0;
+}
+
+/* Button */
+.email-button-wrapper {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.email-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: $wh-peach-500;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.email-button:hover {
+    background-color: $wh-peach-700;
+    color: #ffffff;
+}
+
+/* Footer */
+.email-footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: $wh-muted;
+}

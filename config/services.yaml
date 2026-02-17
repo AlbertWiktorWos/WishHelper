@@ -22,3 +22,8 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    #Service with Listener that send emails - we set default sender for all the emails in the app
+    Symfony\Component\Mailer\EventListener\EnvelopeListener:
+        arguments:
+            - '%env(MAIL_SENDER)%' #sender

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}WishHelper – Resend Verification Email!{% endblock %}
+
+{% block body %}
+    <div id="app"
+         data-page="resendVerificationEmail"
+         data-props='{{ {
+             lastEmail: email,
+             resendPath: path("app_verify_resend_email"),
+         }|json_encode|e("html_attr") }}'>
+    </div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'email/emailBase.html.twig' %}
+
+{% block title %}Verify your email{% endblock %}
+
+{% block body %}
+
+    <h2>Hello {{ user.nickName }},</h2>
+
+    <p>
+        Thank you for registering at <strong>WishHelper</strong>.
+    </p>
+
+    <p>
+        Please confirm your email address by clicking the button below:
+    </p>
+
+    <div class="email-button-wrapper">
+        <a href="{{ url }}" class="email-button">
+            Verify my email
+        </a>
+    </div>
+
+    <p>
+        If you did not create this account, ignore this message.
+    </p>
+
+{% endblock %}

@@ -5,11 +5,15 @@ import { createPinia } from 'pinia'
 import LandingPage from "@js/pages/LandingPage.vue";
 import RegisterPage from "@js/pages/RegisterPage.vue";
 import LoginPage from "@js/pages/LoginPage.vue";
+import EmailVerifiedPage from "@js/pages/EmailVerifiedPage.vue";
+import ResendVerificationEmailPage from "@js/pages/ResendVerificationEmailPage.vue";
 
 const pages = {
     landing: LandingPage,
     login: LoginPage,
     register: RegisterPage,
+    emailVerified: EmailVerifiedPage,
+    resendVerificationEmail: ResendVerificationEmailPage,
 }
 
 const appElement = document.getElementById('app')
