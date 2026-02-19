@@ -8,6 +8,7 @@
         :placeholder="placeholder"
         v-model="query"
         @input="onInput"
+        @emptied="onInput"
         @focus="showDropdown = true"
         @blur="onBlur"
         autocomplete="off"
@@ -25,7 +26,8 @@
           class="list-group-item list-group-item-action d-flex align-items-center"
           @mousedown.prevent="selectItem(item)"
       >
-        <img v-if="item.icon" :src="item.icon" alt="" class="me-2" style="width: 20px; height: 14px; object-fit: cover;">
+        <img v-if="item.iconUrl" :src="item.iconUrl" alt="" class="me-2" style="width: 20px; height: 14px; object-fit: cover;">
+        <i v-if="item.icon" :class="['bi', item.icon]"></i>
         <span>{{ item.label }}</span>
       </li>
     </ul>
@@ -44,21 +46,21 @@ const props = defineProps({
   id: {type: String, default: 'search-input'} // id for input and hidden field
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue']);
 
-const query = ref('')
-const results = ref([])
-const showDropdown = ref(false)
-const loading = ref(false)
+const query = ref('');
+const results = ref([]);
+const showDropdown = ref(false);
+const loading = ref(false);
 
 // store to API depending on type
 let store
 switch (props.type) {
   case 'country':
-    store = useCountryStore()
+    store = useCountryStore();
     break
   default:
-    throw new Error('Nieobsługiwany typ w SearchComponent')
+    throw new Error('Nieobsługiwany typ w SearchComponent');
 }
 
 const debounceTimeout = ref(null)
@@ -68,50 +70,61 @@ const debounceTimeout = ref(null)
  */
 onMounted(async () => {
   debugger;
+  if(props.modelValue && props.modelValue['@id']){
+    const resultVal = await store.find(props.modelValue['@id']);
+    debugger;
+    if(resultVal){
+      query.value = resultVal.label;
+      results.value = [resultVal];
+      return;
+    }
+  }
+
   await store.fetch();
   try {
     if(store.data.length === 0){
       await store.fetch();
     }
-    results.value = store.data
+    results.value = store.data;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 })
 
 const onInput = async () => {
   if (!query.value) {
-    results.value = []
-    return
+    results.value = [];
+    return;
   }
 
-  // kasujemy poprzedni timeout
-  if (debounceTimeout.value) clearTimeout(debounceTimeout.value)
+  // we delete the previous timeout
+  if (debounceTimeout.value){
+    clearTimeout(debounceTimeout.value);
+  }
 
-  // ustawiamy nowy timeout
+  // we set a new timeout
   debounceTimeout.value = setTimeout(async () => {
-    loading.value = true
+    loading.value = true;
+    debugger;
     try {
       if(query.value) {
-        await store.search(query.value || '')
+        await store.search(query.value || '');
       }else{
-        if(store.data.length === 0){
-          await store.fetch(); // jeśli query jest puste i nie mamy jeszcze danych, pobierz wszystkie
-        }
+          await store.fetch(); // if query is empty, get all
       }
 
-      results.value = store.data
+      results.value = store.data;
     } finally {
-      loading.value = false
+      loading.value = false;
     }
   }, 300) // 300ms debounce
 }
 
 
 const selectItem = (item) => {
-  emit('update:modelValue', item.value)   // we pass only id value
-  query.value = item.label          // input shows label for user
-  showDropdown.value = false
+  emit('update:modelValue', item.value);   // we pass only id value
+  query.value = item.label; // input shows label for user
+  showDropdown.value = false;
 }
 
 const onBlur = () => {

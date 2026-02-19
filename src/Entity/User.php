@@ -7,15 +7,32 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
+use App\EventListener\UserTagListener;
 use App\Repository\UserRepository;
+use App\State\UserMeProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert; // assertions
 
+// assertions
+
+#[ApiResource( // we define a custom operation for /user/me endpoint to get and update the current authenticated user, and we use custom provider and processor to handle the logic of fetching and updating the user data. We also set security to require ROLE_USER for this endpoint, so only authenticated users can access it.
+    uriTemplate: '/users/me',
+    operations: [
+        new Get(
+        ),
+        new Patch(
+            read: true, // <---- Add this
+        ),
+    ],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']], // only use read group
+    security: 'is_granted("ROLE_USER")',
+    provider: UserMeProvider::class,
+)]
 #[ApiResource(
     operations: [
         new Get(),
@@ -28,6 +45,7 @@ use Symfony\Component\Validator\Constraints as Assert; // assertions
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+// #[ORM\EntityListeners([UserTagListener::class])] // we declare that in services.yaml
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -37,8 +55,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180)]
     #[Groups(['user:read'])]
-    #[Assert\NotBlank]
-    #[Assert\Email]
     private ?string $email = null;
 
     /**
@@ -51,15 +67,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups(['user:write'])]
-    #[Assert\Length(min: 8)]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['user:read', 'user:write'])]
     private ?string $nickName = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 500, nullable: true)]
     #[Groups(['user:read', 'user:write'])]
     private ?string $avatar = null;
 
@@ -72,7 +86,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $notify = false;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    #[Groups(['user:read'])]
+    private ?\DateTimeImmutable $createdAt;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
@@ -203,6 +218,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->avatar = $avatar;
 
         return $this;
+    }
+
+    #[Groups(['user:read'])]
+    private ?string $avatarUrl = null;
+
+    public function setAvatarUrl(?string $url): void
+    {
+        $this->avatarUrl = $url;
+    }
+
+    public function getAvatarUrl(): ?string
+    {
+        return $this->avatarUrl;
     }
 
     public function isVerified(): bool

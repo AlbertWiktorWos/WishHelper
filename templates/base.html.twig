@@ -49,8 +49,7 @@
 
             <div class="d-flex gap-2">
                 {% if app.user %}
-                    {#                    {{ path('app_profile') }}#}
-                    <a href="#" class="btn btn-outline-primary">
+                    <a href="{{ path('app_profile') }}" class="btn btn-outline-primary">
                         Profile
                     </a>
                     <a href="{{ path('app_logout') }}" class="btn btn-outline-secondary">

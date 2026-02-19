@@ -1,23 +1,23 @@
 import { defineStore } from 'pinia'
-import CountryService from '../services/CountryService'
+import CategoryService from "@js/services/CategoryService";
 
 /**
- * @typedef {Object} Country
+ * @typedef {Object} Category
  * @property {number|string} id
  * @property {string} label
  */
 
-export const useCountryStore = defineStore('country', {
+export const useCategoryStore = defineStore('category', {
     state: () => ({
-        /** @type {Country[]} */
+        /** @type {Category[]} */
         data: [],
         loading: false,
         error: null,
     }),
     actions: {
 
-        /** Mapuje wynik API na {id, label} */
-        mapCountries(apiResult) {
+        /** Maps API result to {value, label} */
+        mapCategories(apiResult) {
             let result= [];
             if(Array.isArray(apiResult)){
                 result = apiResult;
@@ -29,15 +29,15 @@ export const useCountryStore = defineStore('country', {
             }
 
             return result.map(item => ({
-                ...item,// preserves all original fields: continent, currency, etc.
+                ...item, // retains all original fields: continent, currency, etc.
                 label: item.name,
-                iconUrl: item.flag,
                 value: item['@id'].split('/').pop(),
+                icon: item.icon,
             }))
         },
 
         /**
-         * Searches for countries by query and maps to the {id, label} structure
+         * Looks for a category by query and maps it to a {value, label} structure
          * @param {string} query
          */
         async search(query = '') {
@@ -45,18 +45,11 @@ export const useCountryStore = defineStore('country', {
             this.loading = true
             this.error = null
             try {
-                if(query.trim() === '') {
-                    // If query is empty, get all countries
-                    const res = await CountryService.fetch();
-                    this.data = this.mapCountries(res);
-                    return;
-                }
-
-                const res = await CountryService.search(query);
+                const res = await CategoryService.search(query)
                 // API can return {data: [...]}, we map to our structure
-                this.data = this.mapCountries(res);
+                this.data = this.mapCategories(res);
             } catch (err) {
-                this.error = err.message || 'Error fetching countries'
+                this.error = err.message || 'Error fetching Categories'
             } finally {
                 this.loading = false
             }
@@ -70,10 +63,10 @@ export const useCountryStore = defineStore('country', {
             this.loading = true
             this.error = null
             try {
-                const res = await CountryService.fetch(params)
-                this.data = this.mapCountries(res);
+                const res = await CategoryService.fetch(params)
+                this.data = this.mapCategories(res);
             } catch (err) {
-                this.error = err.message || 'Error fetching countries'
+                this.error = err.message || 'Error fetching Categories'
             } finally {
                 this.loading = false
             }
@@ -87,14 +80,14 @@ export const useCountryStore = defineStore('country', {
             this.loading = true
             this.error = null
             try {
-                const res = await CountryService.find(url)
-                this.data = this.mapCountries(res);
+                const res = await CategoryService.find(url)
+                this.data = this.mapCategories(res);
             } catch (err) {
-                this.error = err.message || 'Error fetching countries'
+                this.error = err.message || 'Error fetching Categories'
             } finally {
                 this.loading = false
             }
-            return this.data.length > 0 ? this.data[0] : null; // return the first country or null
+            return this.data.length > 0 ? this.data[0] : null; // return the first category or null
         },
     },
 })

@@ -7,6 +7,7 @@ import RegisterPage from "@js/pages/RegisterPage.vue";
 import LoginPage from "@js/pages/LoginPage.vue";
 import EmailVerifiedPage from "@js/pages/EmailVerifiedPage.vue";
 import ResendVerificationEmailPage from "@js/pages/ResendVerificationEmailPage.vue";
+import ProfilePage from "@js/pages/ProfilePage.vue";
 
 const pages = {
     landing: LandingPage,
@@ -14,6 +15,7 @@ const pages = {
     register: RegisterPage,
     emailVerified: EmailVerifiedPage,
     resendVerificationEmail: ResendVerificationEmailPage,
+    profile: ProfilePage,
 }
 
 const appElement = document.getElementById('app')
@@ -26,7 +28,7 @@ if (appElement) {
 
     if (pageName && pages[pageName]) {
         const app = createApp(pages[pageName], props)
-        app.use(createPinia())
-        app.mount(appElement)
+        app.use(createPinia());
+        app.mount(appElement);
     }
 }

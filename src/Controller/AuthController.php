@@ -22,10 +22,11 @@ use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
 class AuthController extends AbstractController
 {
+    public function __construct(private readonly EntityManagerInterface $em)
+    {
+    }
 
-    public function __construct(private readonly EntityManagerInterface $em) {}
-
-    #[Route(path: '/login', name: 'app_login', methods: ['GET','POST'])]
+    #[Route(path: '/login', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         // get the login error if there is one
@@ -35,7 +36,7 @@ class AuthController extends AbstractController
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('auth/login.html.twig', [
-            'email' => $lastUsername, //as email is our username field, we pass it to form to fill email input
+            'email' => $lastUsername, // as email is our username field, we pass it to form to fill email input
             'error' => $error,
         ]);
     }
@@ -46,25 +47,24 @@ class AuthController extends AbstractController
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
-    #[Route('/register', name: 'app_register', methods: ['GET','POST'])]
-    public function register
-    (Request $request,
-     UserPasswordHasherInterface $userPasswordHasher,
-     EntityManagerInterface $entityManager,
-     CsrfTokenManagerInterface $csrfTokenManager, // we use this to validate the CSRF token, because we dont use symfony form, we need to do it manually
-     SerializerInterface $serializer,
-     ValidatorInterface $validator,
-     Mailer $mailer, //our service to send emails
-     VerifyEmailHelperInterface $verifyEmailHelper //from symfonycasts/verify-email-bundle
-    ): Response
-    {
-        if(empty($request->getContent())) {
-            return $this->render('auth/register.html.twig', [ 'errors' => [] ]);
+    #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
+    public function register(Request $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface $entityManager,
+        CsrfTokenManagerInterface $csrfTokenManager, // we use this to validate the CSRF token, because we dont use symfony form, we need to do it manually
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        Mailer $mailer, // our service to send emails
+        VerifyEmailHelperInterface $verifyEmailHelper, // from symfonycasts/verify-email-bundle
+    ): Response {
+        if (empty($request->getContent())) {
+            return $this->render('auth/register.html.twig', ['errors' => []]);
         }
 
         $submittedToken = $request->request->get('_csrf_token');
         if (!$csrfTokenManager->isTokenValid(new CsrfToken('authenticate', $submittedToken))) {
             $this->addFlash('error', 'Nieprawidłowy token CSRF.');
+
             return $this->redirectToRoute('app_register');
         }
 
@@ -76,8 +76,9 @@ class AuthController extends AbstractController
             foreach ($errors as $violation) {
                 $errorsResult[$violation->getPropertyPath()][] = $violation->getMessage();
             }
+
             return $this->render('auth/register.html.twig', [
-                'errors' => $errorsResult
+                'errors' => $errorsResult,
             ]);
         }
 
@@ -97,27 +98,29 @@ class AuthController extends AbstractController
 
             $entityManager->persist($user);
             $entityManager->flush();
-
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->addFlash('error', 'An error occurred while processing your registration. Please try again later.');
+
             return $this->redirectToRoute('app_register');
         }
 
         try {
             $signatureComponents = $verifyEmailHelper->generateSignature(
-                'app_verify_email', //route of verification route
-                $user->getId(), //user id to verify
-                $user->getEmail(), //user email
+                'app_verify_email', // route of verification route
+                (string) $user->getId(), // user id to verify
+                (string) $user->getEmail(), // user email
                 ['id' => $user->getId()]
             );
 
-            $mailer->sendEmailVerificationMessage($user,$signatureComponents->getSignedUrl() );
-        }catch (\Exception $e) {
+            $mailer->sendEmailVerificationMessage($user, $signatureComponents->getSignedUrl());
+        } catch (\Exception $e) {
             $this->addFlash('error', 'Failed to send verification email. Please try again later.');
+
             return $this->redirectToRoute('app_register');
         }
 
         $this->addFlash('success', 'Email verification sent! Please check your inbox and click the link to verify your account.');
+
         return $this->redirectToRoute('app_landing');
     }
 
@@ -126,8 +129,7 @@ class AuthController extends AbstractController
         Request $request,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
-    ): Response
-    {
+    ): Response {
         $user = $userRepository->find($request->query->get('id'));
         if (!$user) {
             throw $this->createNotFoundException();
@@ -140,25 +142,26 @@ class AuthController extends AbstractController
         return $this->render('auth/email_verified.html.twig');
     }
 
-    #[Route('/verify-email/resend', name: 'app_verify_resend_email', methods: ['GET','POST'])]
+    #[Route('/verify-email/resend', name: 'app_verify_resend_email', methods: ['GET', 'POST'])]
     public function resendVerifyEmail(
         Request $request,
         UserRepository $userRepository,
         Mailer $mailer,
-        VerifyEmailHelperInterface $verifyEmailHelper
-    ): Response
-    {
+        VerifyEmailHelperInterface $verifyEmailHelper,
+    ): Response {
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
             $user = $userRepository->findOneBy(['email' => $email]);
 
             if (!$user) {
                 $this->addFlash('error', 'User not found.');
+
                 return $this->redirectToRoute('app_verify_resend_email');
             }
 
             if ($user->isVerified()) {
                 $this->addFlash('info', 'Email already verified.');
+
                 return $this->redirectToRoute('app_login');
             }
 
@@ -172,12 +175,13 @@ class AuthController extends AbstractController
             $mailer->sendEmailVerificationMessage($user, $signatureComponents->getSignedUrl());
 
             $this->addFlash('success', 'Verification email sent!');
+
             return $this->redirectToRoute('app_login');
         }
         $email = $request->get('email');
+
         return $this->render('auth/resend_verification_email.html.twig', [
             'email' => $email ?? '', // if email is not empty we pass it to form to fill email input, otherwise we pass empty string
         ]);
     }
-
 }

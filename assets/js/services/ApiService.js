@@ -9,9 +9,23 @@ class ApiService {
         })
     }
 
-    async get(url, config = {}) {
+    async get(id, config = {}) {
         try {
-            return await this.client.get(url, config)
+            debugger;
+            return await this.client.get(id, config)
+        } catch (err) {
+            console.error(err)
+            throw err
+        }
+    }
+    async find(url, config = {}) {
+        try {
+            // if url starts with baseURL, remove it
+            const cleanUrl = url.startsWith(this.client.defaults.baseURL)
+                ? url.slice(this.client.defaults.baseURL.length)
+                : url
+
+            return await this.client.get(cleanUrl, config);
         } catch (err) {
             console.error(err)
             throw err
@@ -27,9 +41,20 @@ class ApiService {
         }
     }
 
+    async patch(url, data, config = {}) {
+        config = { ...config, headers: { 'Content-Type': 'application/merge-patch+json', ...config.headers } }
+
+        try {
+            return await this.client.patch(url, data, config)
+        } catch (err) {
+            console.error(err)
+            throw err
+        }
+    }
+
     async search(query = '') {
-        const params = query ? { search: query } : {}
-        const response = await this.get('/', { params }) // używamy this.get
+        const params = query ? { name: query } : {}
+        const response = await this.get('/', { params })
         return response.data.member;
     }
 

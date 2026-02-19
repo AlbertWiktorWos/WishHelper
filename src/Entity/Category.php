@@ -15,7 +15,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(),
         new GetCollection(),
     ],
-    normalizationContext: ['groups' => ['category:read']]
+    normalizationContext: ['groups' => ['category:read']],
+    order: ['name' => 'ASC']
 )]
 #[UniqueEntity('name')]
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
@@ -27,14 +28,14 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['category:read', 'wish:read', 'user:read'])]
+    #[Groups(['category:read', 'wish:read'])]
     private ?string $name = null;
 
     /**
      * In first version of the app we will use this field to store the name of the icon from bootstrap, but in future we can change it to store the path to the uploaded image file.
      */
     #[ORM\Column(length: 255)]
-    #[Groups(['category:read', 'wish:read', 'user:read'])]
+    #[Groups(['category:read', 'wish:read'])]
     private ?string $icon = null;
 
     public function getId(): ?int

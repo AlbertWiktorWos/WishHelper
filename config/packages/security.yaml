@@ -13,6 +13,10 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api: # we add a firewall for api routes, to be able to use the same user provider and authentication for both api and main firewalls but without login redirection for api routes
+            pattern: ^/api
+            stateless: false # we want to use sessions
+            context: main # we want to share the same user provider and authentication for both api and main firewalls
         main:
             lazy: true
             provider: app_user_provider
@@ -37,8 +41,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+#        - { path: ^/api/docs, roles: ROLE_ADMIN }
 
 when@test:
     security:

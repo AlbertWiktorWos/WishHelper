@@ -27,6 +27,7 @@ class UserResourceTest extends ApiTestCase
                 'avatar',
                 'verified',
                 'notify',
+                'createdAt',
                 'categories',
                 'tags',
                 'country',
@@ -54,5 +55,56 @@ class UserResourceTest extends ApiTestCase
             ])
             ->assertStatus(401);
     }
+
+    public function testUserCanPatchOwnProfile(): void
+    {
+        $user = UserFactory::createOne();
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/users/'.$user->getId(), [
+                'json' => [
+                    'nickName' => 'changed',
+                ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json'],
+            ])
+            ->assertStatus(200)
+            ->assertJsonMatches('nickName', 'changed');
+    }
+
+    public function testUserCanPatchOwnProfileByMeUrl(): void
+    {
+        $user = UserFactory::createOne();
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/users/me', [
+                'json' => [
+                    'nickName' => 'changed',
+                ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json'],
+            ])
+            ->dump()
+            ->assertStatus(200)
+            ->assertJsonMatches('nickName', 'changed');
+    }
+
+    public function testUserCannotPatchOtherUser(): void
+    {
+        $owner = UserFactory::createOne();
+        $other = UserFactory::createOne();
+
+        $this->browser()
+            ->actingAs($owner)
+            ->patch('/api/users/'.$other->getId(), [
+                'json' => [
+                    'nickName' => 'hacked',
+                ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json'],
+            ])
+            ->assertStatus(403);
+    }
+
+
 
 }

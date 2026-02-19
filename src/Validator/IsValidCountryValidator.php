@@ -4,13 +4,14 @@ namespace App\Validator;
 
 use App\Entity\Country;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 class IsValidCountryValidator extends ConstraintValidator
 {
-    public function __construct(private readonly EntityManagerInterface $em) {}
+    public function __construct(private readonly EntityManagerInterface $em)
+    {
+    }
 
     /**
      * @param            $value      $the value that should be validated
@@ -30,6 +31,5 @@ class IsValidCountryValidator extends ConstraintValidator
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }
-
     }
 }

@@ -12,38 +12,6 @@ class WishItemResourceTest extends ApiTestCase
     use ResetDatabase; // Trait to reset the database before each test
     use Factories; // Trait to use Zenstruck Foundry factories
 
-    /** --- USER --- */
-    public function testGetUserCollection(): void
-    {
-        UserFactory::createMany(5);
-
-        $this->browser()->get('/api/users')
-            ->assertJson()
-            ->assertJsonMatches('"totalItems"', 5)
-            ->assertJsonMatches('length("member")', 5)
-            ->assertJsonMatches('keys("member"[0])', [
-                '@id',
-                '@type',
-                'email',
-                'nickName',
-                'avatar',
-                'verified',
-                'notify',
-                'categories',
-                'tags',
-                'country',
-            ]);
-    }
-
-    public function testGetUserItem(): void
-    {
-        $user = UserFactory::createOne();
-        $this->browser()->get('/api/users/'.$user->getId())
-            ->assertJson()
-            ->assertStatus(200);
-    }
-
-    /** --- WISH ITEM --- */
     public function testGetWishItemCollection(): void
     {
         WishItemFactory::createMany(15);
@@ -89,4 +57,89 @@ class WishItemResourceTest extends ApiTestCase
             ])
             ->assertStatus(401);
     }
+
+    public function testAuthenticatedUserCanGetWishCollection(): void
+    {
+        $user = UserFactory::createOne();
+        WishItemFactory::createMany(5);
+
+        $this->browser()
+            ->actingAs($user)
+            ->get('/api/wish_items')
+            ->assertStatus(200)
+            ->assertJsonMatches('"totalItems"', 5);
+    }
+
+    public function testUserCanUpdateOwnWish(): void
+    {
+        $user = UserFactory::createOne();
+        $wish = WishItemFactory::createOne([
+            'owner' => $user,
+        ]);
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/wish_items/'.$wish->getId(), [
+                'json' => [
+                    'title' => 'Updated title',
+                    'price' => '20.00',
+                    'shared' => true,
+                    'category' => '/api/categories/1',
+                    'currency' => '/api/currencies/1',
+                ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json'],
+            ])
+            ->assertStatus(200)
+            ->assertJsonMatches('title', 'Updated title');
+    }
+
+    public function testUserCannotUpdateOtherUserWish(): void
+    {
+        $owner = UserFactory::createOne();
+        $other = UserFactory::createOne();
+
+        $wish = WishItemFactory::createOne([
+            'owner' => $owner,
+        ]);
+
+        $this->browser()
+            ->actingAs($other)
+            ->patch('/api/wish_items/'.$wish->getId(), [
+                'json' => [
+                    'title' => 'Hacked',
+                ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json'],
+            ])
+            ->dump()
+            ->assertStatus(403);
+    }
+
+    public function testUserCanDeleteOwnWish(): void
+    {
+        $user = UserFactory::createOne();
+        $wish = WishItemFactory::createOne([
+            'owner' => $user,
+        ]);
+
+        $this->browser()
+            ->actingAs($user)
+            ->delete('/api/wish_items/'.$wish->getId())
+            ->assertStatus(204);
+    }
+
+    public function testUserCannotDeleteOtherWish(): void
+    {
+        $owner = UserFactory::createOne();
+        $other = UserFactory::createOne();
+
+        $wish = WishItemFactory::createOne([
+            'owner' => $owner,
+        ]);
+
+        $this->browser()
+            ->actingAs($other)
+            ->delete('/api/wish_items/'.$wish->getId())
+            ->assertStatus(403);
+    }
+
 }

@@ -9,8 +9,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Repository\WishItemRepository;
 use App\Validator\IsValidLink;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert; // assertions
         new Get(),
         new GetCollection(),
         new Post(),
-        new Put(security: 'object.getOwner() == user'),
+        new Patch(security: 'object.getOwner() == user'),
         new Delete(security: 'object.getOwner() == user'), // later we add admin role too
     ],
     normalizationContext: ['groups' => ['wish:read']],

@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\TagRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -28,6 +30,22 @@ class Tag
     #[Assert\Length(max: 100)]
     private ?string $name = null;
 
+    // Inverse relationship to User
+    /** @var Collection<int, User> */
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'tags')]
+    private Collection $users;
+
+    // Inverse relationship to WishItem
+    /** @var Collection<int, WishItem> */
+    #[ORM\ManyToMany(targetEntity: WishItem::class, mappedBy: 'tags')]
+    private Collection $wishItems;
+
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+        $this->wishItems = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -43,5 +61,15 @@ class Tag
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function getWishItems(): Collection
+    {
+        return $this->wishItems;
     }
 }
