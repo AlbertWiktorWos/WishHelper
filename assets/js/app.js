@@ -8,6 +8,7 @@ import LoginPage from "@js/pages/LoginPage.vue";
 import EmailVerifiedPage from "@js/pages/EmailVerifiedPage.vue";
 import ResendVerificationEmailPage from "@js/pages/ResendVerificationEmailPage.vue";
 import ProfilePage from "@js/pages/ProfilePage.vue";
+import WishItemMinePage from "@js/pages/WishItemMinePage.vue";
 
 const pages = {
     landing: LandingPage,
@@ -16,6 +17,7 @@ const pages = {
     emailVerified: EmailVerifiedPage,
     resendVerificationEmail: ResendVerificationEmailPage,
     profile: ProfilePage,
+    wishItemMine: WishItemMinePage,
 }
 
 const appElement = document.getElementById('app')

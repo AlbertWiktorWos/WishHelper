@@ -2,7 +2,6 @@
   <div class="container py-5">
     <div class="row justify-content-center align-items-center">
 
-      <!-- left: form -->
       <div class="col-md-6">
         <div class="card shadow-sm">
           <div class="card-body p-4">
@@ -12,7 +11,6 @@
         </div>
       </div>
 
-      <!-- right: img -->
       <div class="col-md-6 d-none d-md-block text-end">
         <img :src="require('@images/auth/verified.png')" alt="Login" class="img-fluid" />
       </div>

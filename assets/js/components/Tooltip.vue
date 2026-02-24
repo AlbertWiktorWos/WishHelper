@@ -49,6 +49,7 @@ const adjustPosition = () => {
     return
   }
 
+  // The Element.getBoundingClientRect() method returns a DOMRect object providing information about the size of an element and its position relative to the viewport.
   const wrapperRect = wrapper.value.getBoundingClientRect();
   const tooltipRect = tooltip.value.getBoundingClientRect();
   const windowWidth = window.innerWidth;
@@ -99,7 +100,7 @@ const adjustPosition = () => {
   background-color: $wh-sage-500;
   font-size: 0.85rem;
   border-radius: 4px;
-  text-align: justify;
+  text-align: center;
   white-space: normal;
   word-wrap: break-word;
   z-index: 1000;

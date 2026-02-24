@@ -28,7 +28,7 @@
                   type="country"
                   v-model="form.country"
                   label="Select country"
-                  id="country"
+                  filedName="country"
               />
 
               <div class="mb-3">
@@ -139,7 +139,7 @@ const form = reactive({
   country: '',
 })
 
-// The validation rules for the form fields, using Vuelidate validators and custom error messages
+// The validation rules for the form fields, using Vuelidate validators + custom error messages
 const rules = () => ({
   nickName: {
     required: helpers.withMessage('The nick name is required', required),
@@ -168,8 +168,6 @@ const v$ = useVuelidate(rules, form)
 
 // This computed property processes backend errors and formats them for display
 const backendErrors = computed(() => {
-
-  debugger;
   if (!props.errors){
     return null;
   }

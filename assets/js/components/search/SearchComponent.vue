@@ -8,21 +8,20 @@
         :placeholder="placeholder"
         v-model="query"
         @input="onInput"
-        @emptied="onInput"
         @focus="showDropdown = true"
         @blur="onBlur"
         autocomplete="off"
     />
     <!--  input responsible for sending data  -->
-    <input type="hidden" :name="id" :value="props.modelValue" />
+    <input type="hidden" :name="filedName" :value="props.modelValue" />
 
     <!-- dropdown -->
     <ul v-if="showDropdown" class="list-group position-absolute w-100" style="z-index: 1000; max-height: 200px; overflow-y: auto;">
-      <li v-if="loading" class="list-group-item text-center text-muted">Ładowanie...</li>
-      <li v-else-if="!results || results.length === 0" class="list-group-item text-center text-muted">Brak wyników</li>
+      <li v-if="loading" class="list-group-item text-center text-muted">Loading...</li>
+      <li v-else-if="!results || results.length === 0" class="list-group-item text-center text-muted">No results</li>
       <li
           v-for="item in results"
-          :key="item.value"
+          :key="item.id"
           class="list-group-item list-group-item-action d-flex align-items-center"
           @mousedown.prevent="selectItem(item)"
       >
@@ -37,13 +36,15 @@
 <script setup>
 import {onMounted, ref, watch} from 'vue'
 import {useCountryStore} from '@js/stores/CountryStore.js'
+import {useCurrencyStore} from "@js/stores/CurrencyStore";
+import {useCategoryStore} from "@js/stores/CategoryStore";
 
 const props = defineProps({
-  modelValue: Object, // the entire value of v-model
+  modelValue: {type: String, default: ''}, // the entire value of v-model
   type: {type: String, required: true}, // 'country', 'currency', 'category'
   label: {type: String, default: ''}, // field label
   placeholder: {type: String, default: 'Search...'},
-  id: {type: String, default: 'search-input'} // id for input and hidden field
+  filedName: {type: String, default: 'search-input'} // filedName for input and hidden field
 })
 
 const emit = defineEmits(['update:modelValue']);
@@ -59,8 +60,14 @@ switch (props.type) {
   case 'country':
     store = useCountryStore();
     break
+  case 'currency':
+    store = useCurrencyStore();
+    break
+  case 'category':
+    store = useCategoryStore();
+    break
   default:
-    throw new Error('Nieobsługiwany typ w SearchComponent');
+    throw new Error('Unsupported type in SearchComponent');
 }
 
 const debounceTimeout = ref(null)
@@ -69,13 +76,12 @@ const debounceTimeout = ref(null)
  * It retrieves data from the API when the component is mounted. If the data is already in the store, it uses it immediately.
  */
 onMounted(async () => {
-  debugger;
   if(props.modelValue && props.modelValue['@id']){
     const resultVal = await store.find(props.modelValue['@id']);
-    debugger;
     if(resultVal){
       query.value = resultVal.label;
       results.value = [resultVal];
+      selectItem(resultVal);
       return;
     }
   }
@@ -92,11 +98,6 @@ onMounted(async () => {
 })
 
 const onInput = async () => {
-  if (!query.value) {
-    results.value = [];
-    return;
-  }
-
   // we delete the previous timeout
   if (debounceTimeout.value){
     clearTimeout(debounceTimeout.value);
@@ -105,7 +106,6 @@ const onInput = async () => {
   // we set a new timeout
   debounceTimeout.value = setTimeout(async () => {
     loading.value = true;
-    debugger;
     try {
       if(query.value) {
         await store.search(query.value || '');
@@ -122,7 +122,7 @@ const onInput = async () => {
 
 
 const selectItem = (item) => {
-  emit('update:modelValue', item.value);   // we pass only id value
+  emit('update:modelValue', item['@id']);   // we pass only id value
   query.value = item.label; // input shows label for user
   showDropdown.value = false;
 }
@@ -133,7 +133,7 @@ const onBlur = () => {
 
 // if v-model is set from outside, show label in input
 watch(() => props.modelValue, (val) => {
-  const selected = store.data.find(d => d.value === val)
+  const selected = store.data.find(item => item['@id'] === val)
   query.value = selected ? selected.label : ''
 })
 </script>

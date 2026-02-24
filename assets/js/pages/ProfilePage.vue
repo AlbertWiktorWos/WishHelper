@@ -53,7 +53,6 @@
             </p>
           </div>
           <div v-if="editMode">
-            <!-- ProfileForm - only in edit mode -->
             <ProfileForm
                 v-if="editMode"
                 :user="store.data"
@@ -81,7 +80,6 @@
 
           <div class="mt-2">
             <div v-for="cat in categoriesStore.data" :key="cat.id">
-              <!-- Categories -->
 
               <i v-if="cat.icon" :class="['bi', cat.icon]"></i>
 
@@ -107,11 +105,22 @@
 
         <!-- Followed tags -->
         <div class="card p-3 mb-4">
+
+          <div class="position-absolute top-0 end-0 m-3 text-muted">
+            <Tooltip text="The tags you follow will affect the wishes notifications you receive." position="top">
+              <i class="bi bi-info-circle"
+              ></i>
+            </Tooltip>
+          </div>
+
           <strong>Observed tags</strong>
 
           <TagInput
               v-model="tags"
           />
+          <p v-if="tagError" class="align-self-center text-danger">
+            {{ tagError }}
+          </p>
 
         </div>
         <!-- Changing Notifications -->
@@ -122,14 +131,10 @@
               <p class="mb-0 text-muted">Receive updates about new content and recommendations.</p>
             </div>
 
-            <div class="checkbox-wrapper-22">
-              <label class="switch" for="checkbox">
-                <input type="checkbox" id="checkbox"
-                       v-model="emailNotifications"
-                />
-                <div class="slider round"></div>
-              </label>
-            </div>
+            <BaseSwitch
+                :model-value="store.data.notify ?? false"
+                @update:modelValue="value => toggleNotifications(value)"
+            />
           </div>
         </div>
 
@@ -160,40 +165,28 @@ import { useCategoryStore } from '@js/stores/CategoryStore';
 import ProfileForm from '@js/components/profile/ProfileForm.vue';
 import TagInput from "@js/components/TagInput.vue";
 import Tooltip from "@js/components/Tooltip.vue";
+import BaseSwitch from "@js/components/BaseSwitch.vue";
 
-const store = useProfileStore()
-const categoriesStore = useCategoryStore()
-const editMode = ref(false)
-const newTag = ref('')
+const store = useProfileStore();
+const categoriesStore = useCategoryStore();
+const editMode = ref(false);
+const newTag = ref('');
+let tagError = ref(null);
 
 // Fetch user profile + categories on mount
 onMounted(async () => {
   if (!store.isLoaded){
-    await store.fetchMe()
+    await store.fetchMe();
   }
   if (categoriesStore.data.length === 0){
-    await categoriesStore.fetch()
-  }
-})
-
-// computed - email notifications
-const emailNotifications = computed({
-  get() {
-    return store.data?.notify ?? false
-  },
-  set(value) {
-    if(store.data){
-      store.data.notify = value
-      toggleNotifications(value)
-    }
+    await categoriesStore.fetch();
   }
 })
 
 // checkbox categories computed
 const handleCategoryChange = async (event, cat) => {
-  debugger;
   if (!store.data.categories) {
-    store.data.categories = []
+    store.data.categories = [];
   }
 
   if (event.target.checked) {
@@ -202,26 +195,35 @@ const handleCategoryChange = async (event, cat) => {
     }
   } else {
     store.data.categories =
-        store.data.categories.filter(c => c !== cat['@id'])
+        store.data.categories.filter(c => c !== cat['@id']);
   }
 
-  await updateCategories()
+  await updateCategories();
 }
 
 
 const tags = computed({
   get() {
-    return store.data?.tags ?? []
+    return store.data?.tags ?? [];
   },
-  async set(value) {
-    if (!store.data) return
-    store.data.tags = value
-    await store.update({ tags: value })
+  set(value) {
+    if (!store.data) return;
+    store.data.tags = value;
+    updateTags(value);
   }
 })
 
+const updateTags = async (tags) => {
+  try {
+    tagError.value = null;
+    await store.update({ tags });
+  } catch (err) {
+    store.data.tags.pop();
+    tagError.value = 'Failed to update tags.';
+  }
 
-// helpers
+}
+
 const formattedDate = (date) => date ? new Date(date).toLocaleDateString() : '-'
 
 // CRUD functions
@@ -231,92 +233,41 @@ const handleSave = async (payload) => {
 }
 
 const uploadAvatar = () => {
-  const input = document.createElement('input')
-  input.type = 'file'
-  input.accept = 'image/*'
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
 
   input.onchange = async (e) => {
     const file = e.target.files[0]
     const formData = new FormData()
     formData.append('file', file)
-    debugger;
     const response = await fetch('/api/profile/avatar', {
       method: 'POST',
       body: formData,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
-    })
+    });
 
-    const data = await response.json()
-    store.data.avatarUrl = data.avatarUrl
+    const data = await response.json();
+    store.data.avatarUrl = data.avatarUrl;
   }
 
-  input.click()
+  input.click();
 }
 
 
-
-const toggleNotifications = async () => {
-  await store.update({notify: store.data.notify})
+const toggleNotifications = async (value) => {
+  store.data.notify = value;
+  await store.update({notify: value});
 }
 
 const updateCategories = async () => {
-  await store.update({categories: store.data.categories})
+  await store.update({categories: store.data.categories});
 }
 
 </script>
 
 <style lang="scss" scoped>
-@import '~styles/variables';
-
- .checkbox-wrapper-22 .switch {
-   display: inline-block;
-   height: 34px;
-   position: relative;
-   width: 60px;
- }
-
-.checkbox-wrapper-22 .switch input {
-  display:none;
-}
-
-.checkbox-wrapper-22 .slider {
-  background-color: $wh-sage-100;
-  bottom: 0;
-  cursor: pointer;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transition: .4s;
-}
-
-.checkbox-wrapper-22 .slider:before {
-  background-color: $wh-sage-300;
-  bottom: 4px;
-  content: "";
-  height: 26px;
-  left: 4px;
-  position: absolute;
-  transition: .4s;
-  width: 26px;
-}
-
-.checkbox-wrapper-22 input:checked + .slider {
-  background-color: $wh-sage-500;
-}
-
-.checkbox-wrapper-22 input:checked + .slider:before {
-  transform: translateX(26px);
-}
-
-.checkbox-wrapper-22 .slider.round {
-  border-radius: 34px;
-}
-
-.checkbox-wrapper-22 .slider.round:before {
-  border-radius: 50%;
-}
 
 </style>

@@ -1,7 +1,5 @@
 <?php
 
-// src/Service/TagService.php
-
 namespace App\Service;
 
 use App\Entity\Tag;
@@ -9,12 +7,14 @@ use App\Entity\User;
 use App\Entity\WishItem;
 use App\Repository\TagRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class TagService
 {
     public function __construct(
         private TagRepository $tagRepository,
         private EntityManagerInterface $em,
+        private ValidatorInterface $validator,
     ) {
     }
 
@@ -38,11 +38,11 @@ class TagService
     public function syncTags(User|WishItem $entity): User|WishItem
     {
         $tagRepo = $this->em->getRepository(Tag::class);
-        assert($tagRepo instanceof TagRepository);
-        if ($entity instanceof User) {  // aktualne tagi w DB
-            $currentTags = $tagRepo->findUserTags($entity); // Tag[]
-        } else {
-            $currentTags = $tagRepo->findWishItemsTags($entity); // Tag[]
+        $currentTags = [];
+        if ($entity instanceof User) {  // current tags from db
+            $currentTags = $tagRepo->findUserTags($entity);
+        } elseif ($entity->getId()) {
+            $currentTags = $tagRepo->findWishItemsTags($entity);
         }
 
         $newTagNames = $entity->getTags()->map(fn (Tag $t) => $t->getName())->toArray();
@@ -58,6 +58,10 @@ class TagService
         $entity->getTags()->clear(); // we remove all of them and then add them back to avoid dirty checking problems
         foreach ($newTagNames as $name) {
             $tag = $this->getOrCreateTag($name);
+            $errors = $this->validator->validate($tag);
+            if (count($errors) > 0) {
+                throw new \InvalidArgumentException(array_reduce((array) $errors, function ($value, $error) { return $value."\n".$error; }, ''));
+            }
             $entity->addTag($tag);
         }
 

@@ -1,4 +1,3 @@
-// assets/js/services/CategoryService.js
 import ApiService from './ApiService'
 
 class CategoryService extends ApiService {

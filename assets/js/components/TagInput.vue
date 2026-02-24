@@ -27,7 +27,7 @@
           @keydown.enter.prevent="addTag"
           placeholder="Add new tag"
       />
-      <button class="btn btn-primary" @click="addTag">
+      <button type="button" class="btn btn-primary" @click="addTag">
         Add
       </button>
     </div>
@@ -58,7 +58,14 @@ watch(
 
 const addTag = () => {
   const value = newTag.value.trim()
-  if (!value) return
+  if (!value) {
+    return;
+  }
+  for(let i = 0; i < internalTags.value.length; i++){
+    if (internalTags.value[i].name.toLowerCase() === value.toLowerCase()){
+      return;
+    }
+  }
 
   internalTags.value.push({ name: value })
   emit('update:modelValue', internalTags.value)

@@ -11,7 +11,7 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 final class MainController extends AbstractController
 {
     #[Route('/', name: 'app_landing')]
-    public function index(#[CurrentUser] User $user = null): Response
+    public function index(#[CurrentUser] ?User $user = null): Response
     {
         if ($user) {
             return $this->redirectToRoute('app_profile');

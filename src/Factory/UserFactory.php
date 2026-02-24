@@ -37,7 +37,6 @@ final class UserFactory extends PersistentProxyObjectFactory
             'nickName' => self::faker()->userName,
             'verified' => self::faker()->boolean(80), // 80% chance że jest zweryfikowany
             'notify' => self::faker()->boolean(50),
-            'avatar' => self::faker()->imageUrl(100, 100, 'people'),
             'country' => CountryFactory::new(),
             'categories' => [CategoryFactory::new()],
             'tags' => [TagFactory::new()],

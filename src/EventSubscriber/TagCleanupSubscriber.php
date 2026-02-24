@@ -7,6 +7,7 @@ use App\Entity\WishItem;
 use App\Service\TagService;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\PersistentCollection;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 /**
@@ -23,16 +24,10 @@ class TagCleanupSubscriber implements EventSubscriber
     {
         return [
             Events::postPersist,
-            Events::postUpdate,
         ];
     }
 
     public function postPersist(LifecycleEventArgs $args): void
-    {
-        $this->cleanupIfTagsChanged($args);
-    }
-
-    public function postUpdate(LifecycleEventArgs $args): void
     {
         $this->cleanupIfTagsChanged($args);
     }
@@ -46,10 +41,10 @@ class TagCleanupSubscriber implements EventSubscriber
             return;
         }
 
-        if ($entity->getTags()?->isDirty()) {
-            return; // nothing has changed
+        if ($entity->getTags() instanceof PersistentCollection && $entity->getTags()->isDirty()) {
+            $this->tagService->cleanupTagsForEntity();
         }
 
-        $this->tagService->cleanupTagsForEntity();
+         // nothing has changed
     }
 }

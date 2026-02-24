@@ -1,8 +1,16 @@
 import { defineStore } from 'pinia'
-import ProfileService from '../services/ProfileService'
+import ProfileService from '@js/services/ProfileService'
+
+/**
+ * @typedef {Object} User
+ * @property {number|string} id
+ * @property {null|string} nickName
+ * @property {string} email
+ */
 
 export const useProfileStore = defineStore('profile', {
     state: () => ({
+        /** @type {User|null} */
         data: null,
         loading: false,
         saving: false,
@@ -14,7 +22,6 @@ export const useProfileStore = defineStore('profile', {
     },
 
     actions: {
-
         async fetchMe() {
             this.loading = true
             this.error = null

@@ -17,6 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Context;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert; // assertions
 
@@ -30,16 +31,18 @@ use Symfony\Component\Validator\Constraints as Assert; // assertions
     ],
     normalizationContext: ['groups' => ['wish:read']],
     denormalizationContext: ['groups' => ['wish:write']],
-    security: "is_granted('ROLE_USER')",
+    order: ['createdAt' => 'DESC'],
+    security: "is_granted('ROLE_USER')"
 )]
 #[ApiFilter(SearchFilter::class, properties: [
     'category' => 'exact',
     'tags' => 'exact',
     'owner' => 'exact',
 ])]
-#[ApiFilter(RangeFilter::class, properties: [
-    'price',
-])]
+#[ApiFilter(
+    RangeFilter::class, properties: [
+        'price',
+    ])]
 #[ORM\Entity(repositoryClass: WishItemRepository::class)]
 class WishItem
 {
@@ -51,7 +54,7 @@ class WishItem
     #[ORM\Column(length: 255)]
     #[Groups(['wish:read', 'wish:write'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
+    #[Assert\Length(max: 100)]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -59,9 +62,10 @@ class WishItem
     #[Assert\Length(max: 1000)]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     #[Groups(['wish:read', 'wish:write'])]
     #[Assert\PositiveOrZero]
+    #[Context(['disable_type_enforcement' => true])]
     private ?string $price = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -73,7 +77,7 @@ class WishItem
 
     #[ORM\Column]
     #[Groups(['wish:read', 'wish:write'])]
-    private ?bool $shared = null;
+    private bool $shared = false;
 
     #[ORM\Column]
     #[Groups(['wish:read'])]
@@ -102,7 +106,8 @@ class WishItem
     private ?User $owner = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['wish:read', 'wish:write'])]
     private ?Currency $currency = null;
 
     public function __construct()
@@ -145,7 +150,7 @@ class WishItem
         return $this->price;
     }
 
-    public function setPrice(string $price): static
+    public function setPrice(?string $price): static
     {
         $this->price = $price;
 
@@ -164,7 +169,7 @@ class WishItem
         return $this;
     }
 
-    public function isShared(): ?bool
+    public function isShared(): bool
     {
         return $this->shared;
     }

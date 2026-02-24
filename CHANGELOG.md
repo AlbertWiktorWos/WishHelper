@@ -1,3 +1,6 @@
+## [24.02.2025]
+- Fully working user wishlist view + small global fixes
+- Currency and WishItem management functionality
 ## [19.02.2025]
 - Fully functional Profile view and data management and universal SearchComponent and API services
 - Service handling tags used in users and wishItems

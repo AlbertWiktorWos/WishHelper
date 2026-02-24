@@ -58,8 +58,6 @@ class CheckVerifiedUserSubscriber implements EventSubscriberInterface
 
     /**
      * Which events we want to listen.
-     *
-     * @return array[]
      */
     public static function getSubscribedEvents(): array
     {

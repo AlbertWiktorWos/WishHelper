@@ -18,6 +18,7 @@ export const useCategoryStore = defineStore('category', {
 
         /** Maps API result to {value, label} */
         mapCategories(apiResult) {
+            debugger;
             let result= [];
             if(Array.isArray(apiResult)){
                 result = apiResult;
@@ -31,6 +32,7 @@ export const useCategoryStore = defineStore('category', {
             return result.map(item => ({
                 ...item, // retains all original fields: continent, currency, etc.
                 label: item.name,
+                id: item['@id'],
                 value: item['@id'].split('/').pop(),
                 icon: item.icon,
             }))
@@ -48,9 +50,12 @@ export const useCategoryStore = defineStore('category', {
                 const res = await CategoryService.search(query)
                 // API can return {data: [...]}, we map to our structure
                 this.data = this.mapCategories(res);
+                debugger;
             } catch (err) {
+                debugger;
                 this.error = err.message || 'Error fetching Categories'
             } finally {
+                debugger;
                 this.loading = false
             }
         },

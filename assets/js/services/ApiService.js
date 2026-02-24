@@ -1,4 +1,3 @@
-// assets/js/services/ApiService.js
 import axios from 'axios'
 
 class ApiService {
@@ -32,9 +31,9 @@ class ApiService {
         }
     }
 
-    async post(url, data, config = {}) {
+    async post(data, config = {}) {
         try {
-            return await this.client.post(url, data, config)
+            return await this.client.post('', data, config)
         } catch (err) {
             console.error(err)
             throw err
@@ -43,9 +42,27 @@ class ApiService {
 
     async patch(url, data, config = {}) {
         config = { ...config, headers: { 'Content-Type': 'application/merge-patch+json', ...config.headers } }
+        // if url starts with baseURL, remove it
+        const cleanUrl = url.startsWith(this.client.defaults.baseURL)
+            ? url.slice(this.client.defaults.baseURL.length)
+            : url
 
         try {
-            return await this.client.patch(url, data, config)
+            return await this.client.patch(cleanUrl, data, config)
+        } catch (err) {
+            console.error(err)
+            throw err
+        }
+    }
+
+    async delete(url, data, config = {}) {
+        // if url starts with baseURL, remove it
+        const cleanUrl = url.startsWith(this.client.defaults.baseURL)
+            ? url.slice(this.client.defaults.baseURL.length)
+            : url
+
+        try {
+            return await this.client.delete(cleanUrl, config)
         } catch (err) {
             console.error(err)
             throw err

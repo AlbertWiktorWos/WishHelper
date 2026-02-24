@@ -18,12 +18,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: ['groups' => ['currency:read']]
 )]
 #[ORM\Entity(repositoryClass: CurrencyRepository::class)]
-#[ApiResource]
 class Currency
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['currency:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

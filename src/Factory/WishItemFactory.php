@@ -38,7 +38,9 @@ final class WishItemFactory extends PersistentProxyObjectFactory
             'owner' => UserFactory::new(),
             'price' => self::faker()->randomFloat(2, 0.01, 10000),
             'shared' => self::faker()->boolean(),
-            'title' => self::faker()->text(255),
+            'title' => self::faker()->words(3, true),
+            'description' => self::faker()->realText(255),
+            'tags' => [TagFactory::new()],
         ];
     }
 

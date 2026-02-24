@@ -28,6 +28,6 @@ class RegisterUserDto
         $this->email = $email;
         $this->password = $password;
         $this->nickName = $nickName;
-        $this->country = $country;
+        $this->country = preg_replace('#^/api/countries/#', '', $country);
     }
 }

@@ -1,4 +1,3 @@
-// assets/js/services/CountryService.js
 import ApiService from './ApiService'
 
 class CountryService extends ApiService {

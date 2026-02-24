@@ -60,11 +60,16 @@ watch(() => props.user, (val) => {
 }, { immediate: true })
 
 const submit = () => {
+
+  if(form.country
+      && typeof form.country === 'object'
+      && form.country['@id']){
+    form.country = form.country['@id'];
+  }
+
   emit('save', {
     nickName: form.nickName,
     country: form.country
-        ? `/api/countries/${form.country}`
-        : null
   })
 }
 </script>
