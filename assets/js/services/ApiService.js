@@ -72,18 +72,18 @@ class ApiService {
     async search(query = '') {
         const params = query ? { name: query } : {}
         const response = await this.get('/', { params })
-        return response.data.member;
+        return response.data;
     }
 
     async fetch(params = {}, page = 1, itemsPerPage = 10) {
         const requestParams = { ...params, page, itemsPerPage }
         const response = await this.get('/', { params: requestParams })
-        return response.data.member;
+        return response.data;
     }
 
     async fetchAll(params = {}) {
         const response = await this.get('/', { params })
-        return response.data.member;
+        return response.data;
     }
 
 }

@@ -39,3 +39,4 @@ services:
         arguments:
             $publicStorage: '@public.storage'
             $publicBaseUrl: '%public_base_url%'
+

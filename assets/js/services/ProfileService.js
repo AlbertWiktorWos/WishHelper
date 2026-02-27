@@ -2,7 +2,7 @@ import ApiService from './ApiService'
 
 class ProfileService extends ApiService {
     constructor() {
-        super('/api/users')
+        super('/api/user')
     }
 
     async me() {

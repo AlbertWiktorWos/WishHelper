@@ -1,17 +1,31 @@
 <template>
   <div class="position-relative">
     <label for="search">{{ label }}</label>
-    <input
-        id="search"
-        type="text"
-        class="form-control"
-        :placeholder="placeholder"
-        v-model="query"
-        @input="onInput"
-        @focus="showDropdown = true"
-        @blur="onBlur"
-        autocomplete="off"
-    />
+    <div class="position-relative">
+      <input
+          id="search"
+          type="text"
+          class="form-control pe-5"
+          :placeholder="placeholder"
+          v-model="query"
+          @input="onInput"
+          @focus="showDropdown = true"
+          @blur="onBlur"
+          autocomplete="off"
+      />
+
+      <!-- clear button -->
+      <!-- we set @mousedown.prevent so the blur does not close the dropdown before clicking-->
+      <button
+          v-if="modelValue"
+          type="button"
+          class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 p-0 border-0 bg-transparent"
+          @mousedown.prevent="onClearSelection"
+          tabindex="-1"
+      >
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
     <!--  input responsible for sending data  -->
     <input type="hidden" :name="filedName" :value="props.modelValue" />
 
@@ -28,6 +42,7 @@
         <img v-if="item.iconUrl" :src="item.iconUrl" alt="" class="me-2" style="width: 20px; height: 14px; object-fit: cover;">
         <i v-if="item.icon" :class="['bi', item.icon]"></i>
         <span>{{ item.label }}</span>
+
       </li>
     </ul>
   </div>
@@ -40,7 +55,7 @@ import {useCurrencyStore} from "@js/stores/CurrencyStore";
 import {useCategoryStore} from "@js/stores/CategoryStore";
 
 const props = defineProps({
-  modelValue: {type: String, default: ''}, // the entire value of v-model
+  modelValue: {type: [Object, String], default: ''}, // the entire value of v-model
   type: {type: String, required: true}, // 'country', 'currency', 'category'
   label: {type: String, default: ''}, // field label
   placeholder: {type: String, default: 'Search...'},
@@ -73,15 +88,36 @@ switch (props.type) {
 const debounceTimeout = ref(null)
 
 /**
+ * we clear query and
+ */
+async function onClearSelection(){
+  query.value = '';
+  emit('update:modelValue', null);   // we pass null as value
+  loading.value = true;
+  results.value = [];
+  showDropdown.value = true;
+  try {
+    await store.fetch();
+    results.value = store.data;
+  } finally {
+    loading.value = false;
+  }
+}
+/**
  * It retrieves data from the API when the component is mounted. If the data is already in the store, it uses it immediately.
  */
 onMounted(async () => {
-  if(props.modelValue && props.modelValue['@id']){
-    const resultVal = await store.find(props.modelValue['@id']);
+  debugger;
+  if(props.modelValue){
+    let resultVal = null;
+    if(typeof props.modelValue === 'string'){
+      resultVal = await store.find(props.modelValue);
+    }else{
+      resultVal = await store.find(props.modelValue['@id']);
+    }
     if(resultVal){
       query.value = resultVal.label;
       results.value = [resultVal];
-      selectItem(resultVal);
       return;
     }
   }
@@ -99,6 +135,7 @@ onMounted(async () => {
 
 const onInput = async () => {
   // we delete the previous timeout
+  debugger;
   if (debounceTimeout.value){
     clearTimeout(debounceTimeout.value);
   }
@@ -120,7 +157,10 @@ const onInput = async () => {
   }, 300) // 300ms debounce
 }
 
-
+/**
+ * On select item we need to push info about changing form
+ * @param item
+ */
 const selectItem = (item) => {
   emit('update:modelValue', item['@id']);   // we pass only id value
   query.value = item.label; // input shows label for user
@@ -131,9 +171,21 @@ const onBlur = () => {
   setTimeout(() => showDropdown.value = false, 150) // allows to click on a dropdown item
 }
 
-// if v-model is set from outside, show label in input
+/**
+ * if v-model is set from outside, show label in input
+ * we allows to pass object or id
+ */
 watch(() => props.modelValue, (val) => {
-  const selected = store.data.find(item => item['@id'] === val)
+  debugger;
+  if(store.data.length < 1 || val === null){
+    return;
+  }
+  let selected;
+  if(typeof val === 'string'){
+    selected = store.data.find(item => (item['@id'] === val))
+  }else{
+    selected = store.data.find(item => (item['@id'] === val['@id']))
+  }
   query.value = selected ? selected.label : ''
 })
 </script>

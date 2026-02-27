@@ -61,13 +61,15 @@
         </div>
 
         <!-- RIGHT SIDE: buttons -->
-        <div class="d-flex">
-          <button class="btn btn-outline-primary me-2" @click="$emit('edit')">
-            Edit
-          </button>
-          <button class="btn btn-outline-danger" @click="$emit('delete')">
-            Delete
-          </button>
+        <div v-if="mode === 'owner'">
+          <div class="d-flex">
+            <button class="btn btn-outline-primary me-2" @click="$emit('edit')">
+              Edit
+            </button>
+            <button class="btn btn-outline-danger" @click="$emit('delete')">
+              Delete
+            </button>
+          </div>
         </div>
 
       </div>
@@ -80,6 +82,7 @@
 import { ref } from 'vue'
 
 const props = defineProps({
+  mode: 'owner' | 'readonly',
   item: {
     type: Object,
     required: true

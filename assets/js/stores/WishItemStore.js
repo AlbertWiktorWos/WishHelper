@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import WishItemService from "@js/services/WishItemService";
+import WishItemService from '@js/services/WishItemService'
 
 /**
  * @typedef {Object} WishItem
@@ -14,53 +14,76 @@ import WishItemService from "@js/services/WishItemService";
 export const useWishItemStore = defineStore('wishItem', {
     state: () => ({
         /** @type {WishItem[]} */
-        data: [],
+        items: [],
         loading: false,
         saving: false,
         error: null,
+
+        pagination: {
+            page: 1,
+            perPage: 5,
+            totalItems: 0
+        },
+
+        lastQuery: {
+            filters: {},
+            page: 1,
+            perPage: 5
+        }
     }),
 
-    actions: {
+    getters: {
+        totalPages: (state) => {
+            return Math.max(
+                1,
+                Math.ceil(state.pagination.totalItems / state.pagination.perPage)
+            )
+        }
+    },
 
+    actions: {
         upsertItem(item) {
-            const index = this.data.findIndex(i => i['@id'] === item['@id'])
+            const index = this.items.findIndex(i => i['@id'] === item['@id'])
 
             if (index === -1) {
-                this.data.push(item)
+                this.items.push(item)
             } else {
-                this.data[index] = item
+                this.items[index] = item
             }
         },
 
         removeById(id) {
-            const index = this.data.findIndex(i => i['@id'] === id)
+            const index = this.items.findIndex(i => i['@id'] === id)
             if (index !== -1) {
-                this.data.splice(index, 1)
+                this.items.splice(index, 1)
             }
         },
 
-        async fetch(params = {}) {
+        async fetch(filters = {}, page = 1, perPage = 5) {
             this.loading = true
             this.error = null
 
             try {
-                const items = await WishItemService.fetch(params)
-                this.data = items
-                return items
+                const response = await WishItemService.fetch(filters, page, perPage)
+                debugger;
+                this.items = response.member
+                this.pagination.totalItems = response.totalItems
+                this.pagination.page = page
+                this.pagination.perPage = perPage
             } catch (err) {
-                this.error = err.message || 'Error fetching wishes'
+                this.error = err.response?.data || err.message
                 throw err
             } finally {
                 this.loading = false
             }
         },
 
-        async add(payload, config = {}) {
+        async add(payload) {
             this.saving = true
             this.error = null
-            debugger;
+
             try {
-                const created = await WishItemService.post(payload, config)
+                const created = await WishItemService.post(payload)
                 this.upsertItem(created.data)
                 debugger;
                 return created

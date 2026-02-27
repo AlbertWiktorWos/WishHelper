@@ -23,7 +23,7 @@ export const useCategoryStore = defineStore('category', {
             if(Array.isArray(apiResult)){
                 result = apiResult;
             }else{
-                result = apiResult.data;
+                result = apiResult.member || apiResult.data;
                 if(!Array.isArray(result)){
                     result = [result];
                 }

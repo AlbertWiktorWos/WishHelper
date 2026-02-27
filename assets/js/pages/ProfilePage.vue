@@ -54,7 +54,6 @@
           </div>
           <div v-if="editMode">
             <ProfileForm
-                v-if="editMode"
                 :user="store.data"
                 :saving="store.saving"
                 :error="store.error"
@@ -147,8 +146,6 @@
             </div>
             ...
           </div>
-
-
 
         </div>
 
@@ -244,9 +241,6 @@ const uploadAvatar = () => {
     const response = await fetch('/api/profile/avatar', {
       method: 'POST',
       body: formData,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
     });
 
     const data = await response.json();

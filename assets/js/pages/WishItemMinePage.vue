@@ -54,40 +54,29 @@
 
     <div class="container py-5">
 
-      <div v-if="wishItemStore.loading || !wishItemStore.data" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="mt-2">Loading wishes...</p>
-      </div>
-
-      <div v-else class="row g-4">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2>My Wishes</h2>
-            <button class="btn btn-primary" @click="openCreate">
-              Add Wish
-            </button>
-        </div>
-
-        <WishItemMine
-            :items="wishItemStore.items"
-            :loading="wishItemStore.loading"
-            @delete="handleDelete"
-            @edit="handleEdit"
-        />
-
-      </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>My Wishes</h2>
+      <button class="btn btn-primary" @click="openCreate">
+        Add Wish
+      </button>
     </div>
-  </div>
 
+    <WishItemList
+        :filters="filters"
+        mode="owner"
+        @edit="handleEdit"
+        @delete="wishItemStore.remove($event['@id'])"
+    />
+
+  </div>
+  </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useWishItemStore } from '@js/stores/WishItemStore'
+import WishItemList from '@js/components/wishitem/WishItemList.vue'
 import WishItemForm from '@js/components/wishitem/WishItemForm.vue'
-import WishItemMine from "@js/components/wishitem/WishItemMine.vue";
 import { useProfileStore } from "@js/stores/ProfileStore";
 import { Modal } from 'bootstrap'
 
@@ -100,58 +89,49 @@ const wishItemStore = useWishItemStore()
 const profileStore = useProfileStore()
 
 const editedItem = ref(null)
-const itemToDelete = ref(null)
+const filters = ref({})
 
 onMounted(async () => {
   wishItemStore.isLoading = true
   modalInstance = new Modal(formModalRef.value)
   confirmInstance = new Modal(confirmModalRef.value)
 
-  debugger;
-  await profileStore.fetchMe();
-  debugger;
-  await wishItemStore.fetch({
+  await profileStore.fetchMe()
+
+  filters.value = {
     owner: profileStore.data?.id
-  });
+  }
+
+  await wishItemStore.fetch(filters.value, 1, 10)
 })
 
-const showModal = ref(false)
-
 const openCreate = () => {
-  debugger;
   editedItem.value = null
   modalInstance.show()
 }
 
 const handleEdit = (item) => {
   editedItem.value = item
+  debugger;
   modalInstance.show()
 }
 
 const handleSave = async (payload) => {
-  debugger;
-
-  debugger;
-  if(payload.category
-      && typeof payload.category === 'object'
-      && payload.category['@id']){
-    payload.category = payload.category['@id'];
+  if (payload.category?.['@id']) {
+    payload.category = payload.category['@id']
   }
-  debugger;
-  if(payload.currency
-      && typeof payload.currency === 'object'
-      && payload.currency['@id']){
-    payload.currency = payload.currency['@id'];
+
+  if (payload.currency?.['@id']) {
+    payload.currency = payload.currency['@id']
   }
 
   if (editedItem.value) {
-    debugger;
-    await wishItemStore.update(editedItem.value['@id'], payload);
-    editedItem.value = null;
+    await wishItemStore.update(editedItem.value['@id'], payload)
   } else {
-    await wishItemStore.add(payload);
+    await wishItemStore.add(payload)
   }
-  closeForm()
+
+  modalInstance.hide()
 }
 
 const handleDelete = async (item) => {
@@ -172,4 +152,5 @@ const confirmDelete = async () => {
 const closeForm = () => {
   modalInstance.hide();
 }
+
 </script>

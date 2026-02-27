@@ -129,6 +129,7 @@ const form = reactive({
 watch(
     () => props.item,
     (val) => {
+      debugger;
       if (val) {
         Object.assign(form, val)
       }

@@ -22,7 +22,7 @@ export const useCurrencyStore = defineStore('Currency', {
             if(Array.isArray(apiResult)){
                 result = apiResult;
             }else{
-                result = apiResult.data;
+                result = apiResult.member || apiResult.data;
                 if(!Array.isArray(result)){
                     result = [result];
                 }

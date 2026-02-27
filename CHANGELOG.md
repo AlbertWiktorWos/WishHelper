@@ -1,3 +1,7 @@
+## [27.02.2025]
+- Fix for SearchComponent and Stores
+- Changing WishItemMine to WishItemList to better reusable
+- Fix for user ApiResource - changing uri api/users/me to api/user/me - previous version causes problems with ApiResource should be used calling api/users/{}
 ## [24.02.2025]
 - Fully working user wishlist view + small global fixes
 - Currency and WishItem management functionality

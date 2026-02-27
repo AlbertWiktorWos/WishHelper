@@ -9,8 +9,10 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Filters\NotOwnerFilter;
 use App\Repository\WishItemRepository;
 use App\Validator\IsValidLink;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -32,8 +34,10 @@ use Symfony\Component\Validator\Constraints as Assert; // assertions
     normalizationContext: ['groups' => ['wish:read']],
     denormalizationContext: ['groups' => ['wish:write']],
     order: ['createdAt' => 'DESC'],
-    security: "is_granted('ROLE_USER')"
+    paginationClientItemsPerPage: true, // we allows to set number of items per page by ?itemsPerpage=X
+    security: "is_granted('ROLE_USER')",
 )]
+#[ApiFilter(NotOwnerFilter::class)]
 #[ApiFilter(SearchFilter::class, properties: [
     'category' => 'exact',
     'tags' => 'exact',
@@ -103,6 +107,7 @@ class WishItem
     #[ORM\ManyToOne(inversedBy: 'wishItems')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['wish:read'])]
+    #[Link]
     private ?User $owner = null;
 
     #[ORM\ManyToOne]

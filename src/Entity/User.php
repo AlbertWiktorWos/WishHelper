@@ -16,24 +16,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-// assertions
-
-// assertions
-
-#[ApiResource( // we define a custom operation for /user/me endpoint to get and update the current authenticated user, and we use custom provider and processor to handle the logic of fetching and updating the user data. We also set security to require ROLE_USER for this endpoint, so only authenticated users can access it.
-    uriTemplate: '/users/me',
-    operations: [
-        new Get(
-        ),
-        new Patch(
-            read: true, // <---- Add this
-        ),
-    ],
-    normalizationContext: ['groups' => ['user:read']],
-    denormalizationContext: ['groups' => ['user:write']], // only use read group
-    security: 'is_granted("ROLE_USER")',
-    provider: UserMeProvider::class,
-)]
 #[ApiResource(
     operations: [
         new Get(),
@@ -43,6 +25,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']]
+)]
+#[ApiResource( // we define a custom operation for /user/me endpoint to get and update the current authenticated user, and we use custom provider and processor to handle the logic of fetching and updating the user data. We also set security to require ROLE_USER for this endpoint, so only authenticated users can access it.
+    uriTemplate: '/user/me', // its important to set other uri than default - otherwise errors occurs if we have two GET methods for example.
+    operations: [
+        new Get(
+        ),
+        new Patch(
+            read: true, // <---- Add this
+        ),
+    ],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']],
+    security: 'is_granted("ROLE_USER")', // only use read group
+    provider: UserMeProvider::class,
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]

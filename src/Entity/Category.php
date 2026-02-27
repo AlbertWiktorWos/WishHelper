@@ -20,6 +20,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 #[UniqueEntity('name')]
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
+#[ApiResource(paginationEnabled: false)] // for now we disable pagination for Category - there is to less of them
 class Category
 {
     #[ORM\Id]
