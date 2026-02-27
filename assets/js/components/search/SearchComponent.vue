@@ -188,6 +188,12 @@ watch(() => props.modelValue, (val) => {
   }
   query.value = selected ? selected.label : ''
 })
+
+// we expose query value that parent component can catch that by ref
+defineExpose({
+  query
+})
+
 </script>
 
 <style scoped>

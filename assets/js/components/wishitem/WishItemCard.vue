@@ -71,6 +71,13 @@
             </button>
           </div>
         </div>
+        <div v-else>
+          <div class="d-flex">
+            <button class="btn btn-outline-primary" @click="$emit('copy')">
+              Copy
+            </button>
+          </div>
+        </div>
 
       </div>
 
@@ -122,9 +129,11 @@ const copyLink = () => {
   top: -50px;
 }
 
-/* zapewnia trochę przestrzeni w prawym górnym rogu dla switcha */
+/* provides some space in the upper right corner for the switch */
+.card-title {
+  padding-right: 3rem;
+}
 .card-body {
   padding-top: 1rem;
-  padding-right: 3rem;
 }
 </style>

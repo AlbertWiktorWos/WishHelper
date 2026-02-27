@@ -9,6 +9,7 @@ import EmailVerifiedPage from "@js/pages/EmailVerifiedPage.vue";
 import ResendVerificationEmailPage from "@js/pages/ResendVerificationEmailPage.vue";
 import ProfilePage from "@js/pages/ProfilePage.vue";
 import WishItemMinePage from "@js/pages/WishItemMinePage.vue";
+import WishItemSearchPage from "@js/pages/WishItemSearchPage.vue";
 
 const pages = {
     landing: LandingPage,
@@ -18,6 +19,7 @@ const pages = {
     resendVerificationEmail: ResendVerificationEmailPage,
     profile: ProfilePage,
     wishItemMine: WishItemMinePage,
+    wishItemSearch: WishItemSearchPage,
 }
 
 const appElement = document.getElementById('app')

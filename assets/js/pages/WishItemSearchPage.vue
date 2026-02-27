@@ -6,7 +6,7 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title text-danger">Copy confirmation</h5>
+            <h5 class="modal-title text-primary">Copy confirmation</h5>
             <button type="button" class="btn-close" @click="confirmInstance.hide()"></button>
           </div>
           <div class="modal-body">
@@ -19,7 +19,7 @@
             <button class="btn btn-secondary" @click="confirmInstance.hide()">
               Cancel
             </button>
-            <button class="btn btn-danger" @click="confirmCopy">
+            <button class="btn btn-accent" @click="confirmCopy">
               Copy
             </button>
           </div>
@@ -30,14 +30,14 @@
     <!-- Modal backdrop -->
     <div class="modal-backdrop fade show" v-if="showModal"></div>
 
-    <div class="container py-5">
-
-      <!--      TODO search bar -->
+    <div class="container">
 
         <WishItemList
+            :filters="filters"
             :items="wishItemStore.items"
             :loading="wishItemStore.loading"
             @copy="handleCopy"
+            mode="readonly"
         />
 
     </div>
@@ -62,15 +62,16 @@ const itemToCopy = ref(null)
 const filters = ref({})
 
 onMounted(async () => {
+  debugger;
   wishItemStore.isLoading = true
   confirmInstance = new Modal(confirmModalRef.value)
 
-  debugger;
   await profileStore.fetchMe();
   debugger;
 
   filters.value = {
-    not_owner: true
+    not_owner: true,
+    shared: true
   }
 
   await wishItemStore.fetch(filters.value);
@@ -88,7 +89,15 @@ const confirmCopy = async () => {
   }
 debugger;
   let clone = Object.assign({}, itemToCopy.value);
-  delete(clone['@is']); // todo do I need to clone?
+
+  if (clone.category?.['@id']) {
+    clone.category = clone.category['@id']
+  }
+
+  if (clone.currency?.['@id']) {
+    clone.currency = clone.currency['@id']
+  }
+  delete(clone['@id']);
   await wishItemStore.add(clone);
   confirmInstance.hide();
   itemToCopy.value = null;

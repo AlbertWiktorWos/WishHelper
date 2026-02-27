@@ -25,7 +25,7 @@
           class="form-control"
           v-model="newTag"
           @keydown.enter.prevent="addTag"
-          placeholder="Add new tag"
+          :placeholder=props.placeholder
       />
       <button type="button" class="btn btn-primary" @click="addTag">
         Add
@@ -37,6 +37,10 @@
 import { ref, watch } from 'vue'
 
 const props = defineProps({
+  placeholder: {
+    type: String,
+    default: 'Add tag'
+  },
   modelValue: {
     type: Array,
     default: () => []

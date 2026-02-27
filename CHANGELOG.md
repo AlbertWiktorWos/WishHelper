@@ -1,4 +1,5 @@
 ## [27.02.2025]
+- WishItemSearchPage with filtering and copy function
 - Fix for SearchComponent and Stores
 - Changing WishItemMine to WishItemList to better reusable
 - Fix for user ApiResource - changing uri api/users/me to api/user/me - previous version causes problems with ApiResource should be used calling api/users/{}

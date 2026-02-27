@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Filters\NotOwnerFilter;
+use App\Filters\WishItemTagsAndFilter;
 use App\Repository\WishItemRepository;
 use App\Validator\IsValidLink;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -40,13 +41,13 @@ use Symfony\Component\Validator\Constraints as Assert; // assertions
 #[ApiFilter(NotOwnerFilter::class)]
 #[ApiFilter(SearchFilter::class, properties: [
     'category' => 'exact',
-    'tags' => 'exact',
     'owner' => 'exact',
 ])]
 #[ApiFilter(
     RangeFilter::class, properties: [
         'price',
     ])]
+#[ApiFilter(WishItemTagsAndFilter::class)]
 #[ORM\Entity(repositoryClass: WishItemRepository::class)]
 class WishItem
 {
