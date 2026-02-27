@@ -32,7 +32,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(
         ),
         new Patch(
-            read: true, // <---- Add this
+            read: true, // we force Patch to read full user first
         ),
     ],
     normalizationContext: ['groups' => ['user:read']],

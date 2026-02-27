@@ -75,7 +75,7 @@
           </div>
 
 
-          <strong>Observed Categories</strong>
+          <strong class="pe-2">Observed Categories</strong>
 
           <div class="mt-2">
             <div v-for="cat in categoriesStore.data" :key="cat.id">

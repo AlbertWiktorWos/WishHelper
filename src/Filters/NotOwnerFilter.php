@@ -22,6 +22,7 @@ class NotOwnerFilter extends AbstractFilter
     ) {
         parent::__construct($managerRegistry, null, $nameConverter, $properties);
     }
+
     protected function filterProperty(string $property, mixed $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?Operation $operation = null, array $context = []): void
     {
         if ('not_owner' !== $property) {

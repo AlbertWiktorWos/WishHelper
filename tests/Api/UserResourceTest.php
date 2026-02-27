@@ -22,9 +22,9 @@ class UserResourceTest extends ApiTestCase
             ->assertJsonMatches('keys("member"[0])', [
                 '@id',
                 '@type',
+                'id',
                 'email',
                 'nickName',
-                'avatar',
                 'verified',
                 'notify',
                 'createdAt',
@@ -78,7 +78,7 @@ class UserResourceTest extends ApiTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->patch('/api/users/me', [
+            ->patch('/api/user/me', [
                 'json' => [
                     'nickName' => 'changed',
                 ],

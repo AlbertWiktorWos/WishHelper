@@ -23,6 +23,7 @@ class CurrencyResourceTest extends ApiTestCase
             ->assertJsonMatches('keys("member"[0])', [
                 '@id',
                 '@type',
+                'id',
                 'code',
                 'name',
                 'symbol',

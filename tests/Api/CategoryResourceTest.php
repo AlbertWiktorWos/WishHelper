@@ -25,6 +25,7 @@ class CategoryResourceTest extends ApiTestCase
                 $json->assertMatches('keys("member"[0])', [
                     '@id',
                     '@type',
+                    'id',
                     'name',
                     'icon',
                 ]); // assert that all expected fields are present
