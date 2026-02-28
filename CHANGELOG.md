@@ -1,3 +1,5 @@
+## [28.02.2025]
+- Wishes recommendation with notifications
 ## [27.02.2025]
 - WishItemSearchPage with filtering and copy function
 - Fix for SearchComponent and Stores

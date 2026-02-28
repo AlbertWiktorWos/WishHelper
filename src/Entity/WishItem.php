@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
@@ -15,6 +16,7 @@ use ApiPlatform\Metadata\Post;
 use App\Filters\NotOwnerFilter;
 use App\Filters\WishItemTagsAndFilter;
 use App\Repository\WishItemRepository;
+use App\State\WishItemProvider;
 use App\Validator\IsValidLink;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -27,7 +29,9 @@ use Symfony\Component\Validator\Constraints as Assert; // assertions
 #[ApiResource(
     operations: [
         new Get(),
-        new GetCollection(),
+        new GetCollection(
+            provider: WishItemProvider::class,
+        ),
         new Post(),
         new Patch(security: 'object.getOwner() == user'),
         new Delete(security: 'object.getOwner() == user'), // later we add admin role too
@@ -39,6 +43,7 @@ use Symfony\Component\Validator\Constraints as Assert; // assertions
     security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(NotOwnerFilter::class)]
+#[ApiFilter(BooleanFilter::class, properties: ['shared'])]
 #[ApiFilter(SearchFilter::class, properties: [
     'category' => 'exact',
     'owner' => 'exact',
@@ -57,24 +62,24 @@ class WishItem
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['wish:read', 'wish:write'])]
+    #[Groups(['wish:read', 'wish:write', 'recommendation:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['wish:read', 'wish:write'])]
+    #[Groups(['wish:read', 'wish:write', 'recommendation:read'])]
     #[Assert\Length(max: 1000)]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
-    #[Groups(['wish:read', 'wish:write'])]
+    #[Groups(['wish:read', 'wish:write', 'recommendation:read'])]
     #[Assert\PositiveOrZero]
     #[Context(['disable_type_enforcement' => true])]
     private ?string $price = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['wish:read', 'wish:write'])]
+    #[Groups(['wish:read', 'wish:write', 'recommendation:read'])]
     #[Assert\Url]
     #[Assert\Length(max: 255)]
     #[IsValidLink]
@@ -94,15 +99,15 @@ class WishItem
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['wish:read', 'wish:write'])]
+    #[Groups(['wish:read', 'wish:write', 'recommendation:read'])]
     private ?Category $category = null;
 
     /**
      * @var Collection<int, Tag>
      *                           we add cascade persist to automatically save new tags when we add them to a wish item, without needing to save them separately. This is useful for creating new tags on the fly when adding them to a wish item.
      */
-    #[ORM\ManyToMany(targetEntity: Tag::class, cascade: ['persist'])]
-    #[Groups(['wish:read', 'wish:write'])]
+    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'wishItems', cascade: ['persist'])]
+    #[Groups(['wish:read', 'wish:write', 'recommendation:read'])]
     private Collection $tags;
 
     #[ORM\ManyToOne(inversedBy: 'wishItems')]
@@ -113,7 +118,7 @@ class WishItem
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['wish:read', 'wish:write'])]
+    #[Groups(['wish:read', 'wish:write', 'recommendation:read'])]
     private ?Currency $currency = null;
 
     public function __construct()
@@ -275,5 +280,18 @@ class WishItem
         $this->currency = $currency;
 
         return $this;
+    }
+
+    #[Groups(['wish:match'])]
+    private ?int $matchPercentage = null;
+
+    public function getMatchPercentage(): ?int
+    {
+        return $this->matchPercentage;
+    }
+
+    public function setMatchPercentage(?int $matchPercentage): void
+    {
+        $this->matchPercentage = $matchPercentage;
     }
 }

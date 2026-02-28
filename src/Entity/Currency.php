@@ -27,23 +27,23 @@ class Currency
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read'])]
+    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read', 'recommendation:read'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read'])]
+    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read', 'recommendation:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read'])]
+    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read', 'recommendation:read'])]
     private ?string $symbol = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 6)]
-    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read'])]
+    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read', 'recommendation:read'])]
     private ?string $exchangeRate = null;
 
     #[ORM\Column]
-    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read'])]
+    #[Groups(['currency:read', 'user:read', 'wish:read', 'country:read', 'recommendation:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     public function getId(): ?int

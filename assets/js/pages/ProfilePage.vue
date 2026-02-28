@@ -141,12 +141,51 @@
         <div class="card p-3 mb-4">
           <div class="d-flex justify-content-between align-items-center">
             <div>
-              <strong>Notifications</strong>
-              <p class="mb-0 text-muted"> These wishes may interest you </p>
+              <strong>These wishes may interest you</strong>
             </div>
-            ...
           </div>
+          <div v-if="wishItemRecommendationStore.items.length===0">
+            <p class="mb-0 text-muted"> There is no recommendation yet! </p>
+          </div>
+          <div v-else>
+            <div v-for="recommendation in wishItemRecommendationStore.items" :key="recommendation.id">
 
+              <div class="alert alert-success" role="alert">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="alert-heading">New Wish Recommendation!</h5>
+                  <div>
+                    <span class="text-muted"> {{ getFormattedDate(recommendation.createdAt) }} </span>
+                    <button type="button" @click="handleNotificationSeen(recommendation)" class="btn btn-lg bi bi-check2-circle" data-bs-dismiss="alert" aria-label="Seen"></button>
+                  </div>
+                </div>
+                <p>Title of the wish you may be interested: {{ recommendation.wishItemTitle }}</p>
+
+                <div v-if="recommendation.wishItem">
+
+                  <a
+                      class="btn btn-primary"
+                      data-bs-toggle="collapse"
+                      :href="'#collapseDetails-' + recommendation.id"
+                      role="button"
+                      aria-expanded="false"
+                      :aria-controls="'collapseDetails-' + recommendation.id"
+                  >
+                    Click for details!
+                  </a>
+
+                  <div class="collapse" :id="'collapseDetails-' + recommendation.id">
+                    <WishItemCard
+                        :key="recommendation.wishItem['@id']"
+                        :item="recommendation.wishItem"
+                        :mode="readonly"
+                        @copy="handleCopy(recommendation)"
+                    />
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
 
@@ -156,19 +195,27 @@
 </template>
 
 <script setup>
-import {ref, onMounted, computed, nextTick} from 'vue';
+import {ref, onMounted, computed, nextTick, readonly} from 'vue';
 import { useProfileStore } from '@js/stores/ProfileStore';
 import { useCategoryStore } from '@js/stores/CategoryStore';
+import { useWishItemRecommendationStore } from '@js/stores/WishItemRecommendationStore';
 import ProfileForm from '@js/components/profile/ProfileForm.vue';
 import TagInput from "@js/components/TagInput.vue";
 import Tooltip from "@js/components/Tooltip.vue";
 import BaseSwitch from "@js/components/BaseSwitch.vue";
+import WishItemCard from "@js/components/wishitem/WishItemCard.vue";
+import WishItemService from "@js/services/WishItemService";
 
 const store = useProfileStore();
 const categoriesStore = useCategoryStore();
+const wishItemRecommendationStore = useWishItemRecommendationStore();
 const editMode = ref(false);
 const newTag = ref('');
 let tagError = ref(null);
+
+function getFormattedDate(date) {
+  return (new Date(date)).toLocaleString()
+}
 
 // Fetch user profile + categories on mount
 onMounted(async () => {
@@ -178,7 +225,36 @@ onMounted(async () => {
   if (categoriesStore.data.length === 0){
     await categoriesStore.fetch();
   }
+  if (wishItemRecommendationStore.items.length === 0){
+    await wishItemRecommendationStore.fetch();
+  }
 })
+
+// checkbox categories computed
+const handleNotificationSeen = async (recommendation) => {
+  debugger;
+  await wishItemRecommendationStore.seen(recommendation['@id']);
+}
+
+const handleCopy = async (recommendation) => {
+  const itemToCopy = recommendation.wishItem;
+  if (!itemToCopy) {
+    return;
+  }
+  debugger;
+  let clone = Object.assign({}, itemToCopy);
+
+  if (clone.category?.['@id']) {
+    clone.category = clone.category['@id']
+  }
+
+  if (clone.currency?.['@id']) {
+    clone.currency = clone.currency['@id']
+  }
+  delete(clone['@id']);
+  await WishItemService.post(clone);
+  await handleNotificationSeen(recommendation)
+}
 
 // checkbox categories computed
 const handleCategoryChange = async (event, cat) => {

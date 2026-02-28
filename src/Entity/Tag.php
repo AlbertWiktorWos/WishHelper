@@ -25,7 +25,7 @@ class Tag
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['tag:read', 'tag:write', 'wish:read', 'user:read', 'wish:write', 'user:write'])]
+    #[Groups(['tag:read', 'tag:write', 'wish:read', 'user:read', 'wish:write', 'user:write', 'recommendation:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
     private ?string $name = null;

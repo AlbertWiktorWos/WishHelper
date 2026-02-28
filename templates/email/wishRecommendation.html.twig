@@ -1,0 +1,31 @@
+{% extends 'email/emailBase.html.twig' %}
+
+{% block title %}New wish idea!{% endblock %}
+
+{% block body %}
+
+    <h2>Hello {{ user.nickName }},</h2>
+
+    <p>
+        This <strong>wish</strong> idea could found you well!
+    </p>
+
+    <p>
+        Because you follow this category: {{ category }}, we think that this idea could be interesting.
+    </p>
+
+    <h4>
+        {{ title }}
+    </h4>
+    <p>
+        {{ description }}
+    </p>
+    <p>
+        Tags: {{ tags }}
+    </p>
+
+    <p>
+        You can turn off email notifications in your profile at any time.
+    </p>
+
+{% endblock %}

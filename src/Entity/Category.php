@@ -30,14 +30,14 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['category:read', 'wish:read'])]
+    #[Groups(['category:read', 'wish:read', 'recommendation:read'])]
     private ?string $name = null;
 
     /**
      * In first version of the app we will use this field to store the name of the icon from bootstrap, but in future we can change it to store the path to the uploaded image file.
      */
     #[ORM\Column(length: 255)]
-    #[Groups(['category:read', 'wish:read'])]
+    #[Groups(['category:read', 'wish:read', 'recommendation:read'])]
     private ?string $icon = null;
 
     public function getId(): ?int

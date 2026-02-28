@@ -101,7 +101,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Tag>
      *                           we add cascade persist to automatically save new tags when we add them to a wish item, without needing to save them separately. This is useful for creating new tags on the fly when adding them to a wish item.
      */
-    #[ORM\ManyToMany(targetEntity: Tag::class, cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'users', cascade: ['persist'])]
     #[Groups(['user:read', 'user:write'])]
     private Collection $tags;
 

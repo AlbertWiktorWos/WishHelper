@@ -16,12 +16,12 @@
             </span>
             </div>
 
-            <button class="btn btn-md btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <button class="btn btn-md btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
               Filters
             </button>
           </div>
 
-          <div class="collapse" id="collapseExample">
+          <div class="collapse" id="collapseFilters">
             <div class="card-body">
 
               <div class="row">
@@ -131,6 +131,13 @@
               />
               <span class="text-muted"> {{item.shared ? 'Shared' : 'Private'}} </span>
             </div>
+            <div v-if="mode!=='owner' && item.matchPercentage >= 50" class="position-absolute top-0 end-0 m-2 text-end">
+              <span class="text-muted"> {{'Match: ' + item.matchPercentage + '%!'}} </span>
+              <i class="bi bi-award-fill"></i>
+            </div>
+            <div>
+
+            </div>
           </div>
 
         </div>
@@ -195,6 +202,8 @@ const searchForm = reactive({
 })
 
 const displayedFilters = ref(['No filters applied..'])
+const userFilters = ref({})
+
 // we need refs to get components and their labels
 const currencySearch = ref(null)
 const categorySearch = ref(null)
@@ -314,13 +323,14 @@ const changeFilters = async () => {
     displayedFilters.value.push('No filters applied..')
   }
 
+  userFilters.value = params;
   await wishItemStore.fetch({ ...props.filters, ...params });
 }
 
 const nextPage = async () => {
   if (currentPage.value < totalPages.value) {
     await wishItemStore.fetch(
-        props.filters,
+        { ...props.filters, ...userFilters.value },
         currentPage.value + 1,
         wishItemStore.pagination.perPage
     )
@@ -331,7 +341,7 @@ const nextPage = async () => {
 const prevPage = async () => {
   if (currentPage.value > 1) {
     await wishItemStore.fetch(
-        props.filters,
+        { ...props.filters, ...userFilters.value },
         currentPage.value - 1,
         wishItemStore.pagination.perPage
     )

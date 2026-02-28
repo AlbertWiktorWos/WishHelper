@@ -8,7 +8,6 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\OpenApi\Model\Parameter;
 use App\Entity\User;
 use App\Entity\WishItem;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -49,7 +48,7 @@ final class WishItemTagsAndFilter extends AbstractFilter
 
         $manager = $this->managerRegistry->getManagerForClass($resourceClass);
         assert($manager instanceof EntityManagerInterface);
-        $subQb =  $manager->createQueryBuilder();
+        $subQb = $manager->createQueryBuilder();
 
         $subQb
             ->select('1')
@@ -70,17 +69,16 @@ final class WishItemTagsAndFilter extends AbstractFilter
                 'type' => Type::BUILTIN_TYPE_ARRAY,
                 'property' => 'tags',
                 'required' => false,
-                'openapi' =>
-                    new Parameter(
-                        name: 'not_owner',
-                        in: 'query',
-                        description: 'Filter by tags (AND logic)',
-                        required: false,
-                        schema: [
-                            'type' => 'array',
-                            'example' => ['test'],
-                        ],
-                    ),
+                'openapi' => new Parameter(
+                    name: 'not_owner',
+                    in: 'query',
+                    description: 'Filter by tags (AND logic)',
+                    required: false,
+                    schema: [
+                        'type' => 'array',
+                        'example' => ['test'],
+                    ],
+                ),
             ],
         ];
     }
