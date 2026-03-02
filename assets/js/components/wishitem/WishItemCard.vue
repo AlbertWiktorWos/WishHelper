@@ -1,5 +1,5 @@
 <template>
-  <div class="card h-100 w-100 mb-3">
+  <div :class="['card h-100', 'w-100', 'mb-3', item.matchPercentage > 50 ? 'border-accent' : '']">
     <div class="card-body d-flex flex-column position-relative">
 
       <!-- TITLE -->

@@ -54,7 +54,6 @@ export const useWishItemRecommendationStore = defineStore('wishItemRecommendatio
 
             try {
                 const response = await WishItemRecommendationsService.fetch(filters, page, perPage)
-                debugger;
                 this.items = response.member
                 this.pagination.totalItems = response.totalItems
                 this.pagination.page = page
@@ -70,7 +69,6 @@ export const useWishItemRecommendationStore = defineStore('wishItemRecommendatio
         async seen(url) {
             this.saving = true
             this.error = null
-            debugger;
             try {
                 await WishItemRecommendationsService.patch(url, {isSeen: true})
                 this.removeById(url)

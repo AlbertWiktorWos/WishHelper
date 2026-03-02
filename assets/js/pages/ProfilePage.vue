@@ -1,12 +1,7 @@
 <template>
   <div class="container py-5">
     <!-- Loading -->
-    <div v-if="store.loading || !store.data" class="text-center py-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      <p class="mt-2">Loading profile...</p>
-    </div>
+    <Loader v-if="store.loading || !store.data" text="Loading profile..." />
 
     <div v-else class="row g-4">
 
@@ -50,6 +45,9 @@
             <p>
               <strong>Country:</strong> {{ store.data.country?.name ?? '-' }}
               <img v-if="store.data.country?.flag" :src="store.data.country.flag" alt="" class="me-2" style="width: 20px; height: 14px; object-fit: cover;">
+            </p>
+            <p>
+              <strong>Max price:</strong> {{ store.data.maxPrice ?? '-' }}
             </p>
           </div>
           <div v-if="editMode">
@@ -205,6 +203,7 @@ import Tooltip from "@js/components/Tooltip.vue";
 import BaseSwitch from "@js/components/BaseSwitch.vue";
 import WishItemCard from "@js/components/wishitem/WishItemCard.vue";
 import WishItemService from "@js/services/WishItemService";
+import Loader from "@js/components/Loader.vue";
 
 const store = useProfileStore();
 const categoriesStore = useCategoryStore();
@@ -232,7 +231,6 @@ onMounted(async () => {
 
 // checkbox categories computed
 const handleNotificationSeen = async (recommendation) => {
-  debugger;
   await wishItemRecommendationStore.seen(recommendation['@id']);
 }
 
@@ -241,7 +239,6 @@ const handleCopy = async (recommendation) => {
   if (!itemToCopy) {
     return;
   }
-  debugger;
   let clone = Object.assign({}, itemToCopy);
 
   if (clone.category?.['@id']) {
@@ -290,6 +287,10 @@ const updateTags = async (tags) => {
   try {
     tagError.value = null;
     await store.update({ tags });
+
+    if(!store.error){
+      window.$toast('Success!', 'Tags were updated successfully', 'success')
+    }
   } catch (err) {
     store.data.tags.pop();
     tagError.value = 'Failed to update tags.';
@@ -303,6 +304,10 @@ const formattedDate = (date) => date ? new Date(date).toLocaleDateString() : '-'
 const handleSave = async (payload) => {
   await store.update(payload)
   editMode.value = false
+
+  if(!store.error){
+    window.$toast('Success!', 'Profile was updated successfully', 'success')
+  }
 }
 
 const uploadAvatar = () => {
@@ -321,6 +326,11 @@ const uploadAvatar = () => {
 
     const data = await response.json();
     store.data.avatarUrl = data.avatarUrl;
+
+    if(!store.error){
+      window.$toast('Success!', 'Avatar was updated successfully', 'success')
+    }
+
   }
 
   input.click();
@@ -330,10 +340,16 @@ const uploadAvatar = () => {
 const toggleNotifications = async (value) => {
   store.data.notify = value;
   await store.update({notify: value});
+  if(!store.error){
+    window.$toast('Success!', 'Notification setting was updated successfully', 'success')
+  }
 }
 
 const updateCategories = async () => {
   await store.update({categories: store.data.categories});
+  if(!store.error){
+    window.$toast('Success!', 'Categories were updated successfully', 'success')
+  }
 }
 
 </script>

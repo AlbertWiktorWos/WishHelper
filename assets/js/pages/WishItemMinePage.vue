@@ -1,53 +1,48 @@
 <template>
 
   <div>
-    <!-- Modal -->
-    <div ref="formModalRef" class="modal fade show" tabindex="-1">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">{{ editedItem ? 'Edit Wish' : 'Create Wish' }}</h5>
-            <button type="button" class="btn-close" @click="closeForm"></button>
-          </div>
-          <div class="modal-body">
+    <!-- FORM MODAL -->
+    <BaseModal
+        ref="formModalRef"
+        size="lg"
+    >
+      <template #header>
+        <h5 class="modal-title">
+          {{ editedItem ? 'Edit Wish' : 'Create Wish' }}
+        </h5>
+      </template>
 
-            <WishItemForm
-                :item="editedItem"
-                :saving="wishItemStore.saving"
-                @save="handleSave"
-                @cancel="closeForm"
-            />
+      <WishItemForm
+          :item="editedItem"
+          :saving="wishItemStore.saving"
+          @save="handleSave"
+      />
+    </BaseModal>
 
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Confirm Modal -->
-    <div ref="confirmModalRef" class="modal fade" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title text-danger">Delete confirmation</h5>
-            <button type="button" class="btn-close" @click="confirmInstance.hide()"></button>
-          </div>
-          <div class="modal-body">
-            <p>
-              Are you sure you want to delete
-              <strong>{{ itemToDelete?.title }}</strong>?
-            </p>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" @click="confirmInstance.hide()">
-              Cancel
-            </button>
-            <button class="btn btn-danger" @click="confirmDelete">
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+
+    <BaseModal
+        ref="confirmModalRef"
+        size="sm"
+        centered="centered"
+    >
+      <template #header>
+          <h5 class="modal-title text-danger">Delete confirmation</h5>
+      </template>
+
+      <p>
+        Are you sure you want to delete
+        <strong>{{ itemToDelete?.title }}</strong>?
+      </p>
+
+      <template #footer>
+        <button class="btn btn-danger" @click="confirmDelete">
+          Delete
+        </button>
+      </template>
+
+    </BaseModal>
 
     <!-- Modal backdrop -->
     <div class="modal-backdrop fade show" v-if="showModal"></div>
@@ -65,7 +60,7 @@
         :filters="filters"
         mode="owner"
         @edit="handleEdit"
-        @delete="wishItemStore.remove($event['@id'])"
+        @delete="handleDelete"
     />
 
   </div>
@@ -78,23 +73,20 @@ import { useWishItemStore } from '@js/stores/WishItemStore'
 import WishItemList from '@js/components/wishitem/WishItemList.vue'
 import WishItemForm from '@js/components/wishitem/WishItemForm.vue'
 import { useProfileStore } from "@js/stores/ProfileStore";
-import { Modal } from 'bootstrap'
+import BaseModal from "@js/components/BaseModal.vue";
 
-const formModalRef = ref(null) // form modal
-let modalInstance = null
+const formModalRef = ref(null)
 const confirmModalRef = ref(null) // confirm modal
-let confirmInstance = null
 
 const wishItemStore = useWishItemStore()
 const profileStore = useProfileStore()
 
 const editedItem = ref(null)
+const itemToDelete = ref(null)
 const filters = ref({})
 
 onMounted(async () => {
   wishItemStore.isLoading = true
-  modalInstance = new Modal(formModalRef.value)
-  confirmInstance = new Modal(confirmModalRef.value)
 
   await profileStore.fetchMe()
 
@@ -107,13 +99,12 @@ onMounted(async () => {
 
 const openCreate = () => {
   editedItem.value = null
-  modalInstance.show()
+  formModalRef.value.show()
 }
 
 const handleEdit = (item) => {
   editedItem.value = item
-  debugger;
-  modalInstance.show()
+  formModalRef.value.show()
 }
 
 const handleSave = async (payload) => {
@@ -127,17 +118,22 @@ const handleSave = async (payload) => {
 
   if (editedItem.value) {
     await wishItemStore.update(editedItem.value['@id'], payload)
+    if(!wishItemStore.error){
+      window.$toast('Success!', 'The wish was successfully updated', 'success')
+    }
   } else {
     await wishItemStore.add(payload)
+    if(!wishItemStore.error){
+      window.$toast('Success!', 'The wish was successfully added', 'success')
+    }
   }
 
-  modalInstance.hide()
+  formModalRef.value.hide()
 }
 
 const handleDelete = async (item) => {
-  debugger;
   itemToDelete.value = item;
-  confirmInstance.show();
+  confirmModalRef.value.show();
 }
 
 const confirmDelete = async () => {
@@ -145,12 +141,12 @@ const confirmDelete = async () => {
     return;
   }
   await wishItemStore.remove(itemToDelete.value['@id']);
-  confirmInstance.hide();
+  confirmModalRef.value.hide();
   itemToDelete.value = null;
+  if(!wishItemStore.error){
+    window.$toast('Success!', 'The wish was successfully deleted', 'success')
+  }
 }
 
-const closeForm = () => {
-  modalInstance.hide();
-}
 
 </script>

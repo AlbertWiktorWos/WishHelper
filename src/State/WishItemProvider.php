@@ -63,6 +63,7 @@ final class WishItemProvider implements ProviderInterface
                 $item,
                 $preferredCategoryIds,
                 $preferredTagIds,
+                $user->getMaxPrice()
             );
 
             $item->setMatchPercentage($score);

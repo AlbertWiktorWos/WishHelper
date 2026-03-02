@@ -18,6 +18,17 @@
         id="country"
     />
 
+    <div class="mb-3">
+      <label>Max Price</label>
+      <input
+          type="number"
+          min="0.00"
+          step="0.01"
+          v-model="form.maxPrice"
+          class="form-control"
+      />
+    </div>
+
     <div class="d-grid mt-4">
       <button
           type="submit"
@@ -50,13 +61,17 @@ const emit = defineEmits(['save'])
 const form = reactive({
   nickName: '',
   country: '',
+  maxPrice: 0,
 })
 
 watch(() => props.user, (val) => {
-  if (!val) return
+  if (!val) {
+    return;
+  }
 
   form.nickName = val.nickName;
   form.country = val.country;
+  form.maxPrice = val.maxPrice;
 }, { immediate: true })
 
 const submit = () => {
@@ -69,7 +84,8 @@ const submit = () => {
 
   emit('save', {
     nickName: form.nickName,
-    country: form.country
+    country: form.country,
+    maxPrice: form.maxPrice
   })
 }
 </script>

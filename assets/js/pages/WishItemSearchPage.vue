@@ -62,12 +62,10 @@ const itemToCopy = ref(null)
 const filters = ref({})
 
 onMounted(async () => {
-  debugger;
   wishItemStore.isLoading = true
   confirmInstance = new Modal(confirmModalRef.value)
 
   await profileStore.fetchMe();
-  debugger;
 
   filters.value = {
     not_owner: true,
@@ -78,7 +76,6 @@ onMounted(async () => {
 })
 
 const handleCopy = async (item) => {
-  debugger;
   itemToCopy.value = item;
   confirmInstance.show();
 }
@@ -87,7 +84,6 @@ const confirmCopy = async () => {
   if (!itemToCopy.value) {
     return;
   }
-debugger;
   let clone = Object.assign({}, itemToCopy.value);
 
   if (clone.category?.['@id']) {
@@ -101,6 +97,11 @@ debugger;
   await wishItemStore.add(clone);
   confirmInstance.hide();
   itemToCopy.value = null;
+
+  if(!wishItemStore.error){
+    window.$toast('Success!', 'The wish was successfully copied', 'success')
+  }
+  await wishItemStore.fetch(filters.value);
 }
 
 </script>

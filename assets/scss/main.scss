@@ -3,6 +3,39 @@
 @import "~bootstrap/scss/bootstrap";
 @import "bootstrap-icons";
 
+.border-accent {
+    border-color: $wh-peach-300;
+}
+
+.toast-alert {
+    background-color: $warning;
+    color: $white;
+
+    .bi {
+        color: $light !important;
+    }
+}
+.toast-error {
+    background-color: $danger;
+    color: $white;
+
+    .bi {
+        color: $light !important;
+    }
+}
+.toast-success {
+    background-color: $success;
+    color: $white;
+
+    .bi {
+        color: $light !important;
+    }
+}
+.toast-info {
+    background-color: $light;
+    color: $dark;
+}
+
 /* Accent button */
 .btn-accent {
     background-color: $wh-peach-500;

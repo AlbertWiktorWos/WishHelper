@@ -92,9 +92,6 @@
       </div>
 
       <div class="d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-outline-secondary" @click="$emit('cancel')">
-          Cancel
-        </button>
         <button class="btn btn-accent" :disabled="saving">
           {{ saving ? 'Saving...' : 'Save' }}
         </button>
@@ -115,7 +112,7 @@ const props = defineProps({
   saving: Boolean
 })
 
-const emit = defineEmits(['save', 'cancel'])
+const emit = defineEmits(['save'])
 
 const form = reactive({
   title: '',
@@ -129,7 +126,6 @@ const form = reactive({
 watch(
     () => props.item,
     (val) => {
-      debugger;
       if (val) {
         Object.assign(form, val)
       }

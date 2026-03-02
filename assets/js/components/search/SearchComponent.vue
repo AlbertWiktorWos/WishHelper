@@ -107,7 +107,6 @@ async function onClearSelection(){
  * It retrieves data from the API when the component is mounted. If the data is already in the store, it uses it immediately.
  */
 onMounted(async () => {
-  debugger;
   if(props.modelValue){
     let resultVal = null;
     if(typeof props.modelValue === 'string'){
@@ -135,7 +134,6 @@ onMounted(async () => {
 
 const onInput = async () => {
   // we delete the previous timeout
-  debugger;
   if (debounceTimeout.value){
     clearTimeout(debounceTimeout.value);
   }
@@ -176,7 +174,6 @@ const onBlur = () => {
  * we allows to pass object or id
  */
 watch(() => props.modelValue, (val) => {
-  debugger;
   if(store.data.length < 1 || val === null){
     return;
   }

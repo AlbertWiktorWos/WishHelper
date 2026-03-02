@@ -88,9 +88,7 @@ export const useCountryStore = defineStore('country', {
             this.error = null
             try {
                 const res = await CountryService.find(url)
-                debugger;
                 this.data = this.mapCountries(res);
-                debugger;
             } catch (err) {
                 this.error = err.message || 'Error fetching countries'
             } finally {

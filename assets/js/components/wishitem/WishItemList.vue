@@ -99,9 +99,7 @@
         </div>
       </div>
       <!-- Loading -->
-      <div v-if="wishItemStore.loading" class="text-center py-3">
-        <div class="spinner-border"></div>
-      </div>
+      <Loader v-if="wishItemStore.loading" />
 
       <div v-else>
         <!-- Wishes list -->
@@ -181,6 +179,7 @@ import TagInput from "@js/components/TagInput.vue";
 import SearchComponent from "@js/components/search/SearchComponent.vue";
 import {helpers, maxLength, minLength, required, url} from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
+import Loader from "@js/components/Loader.vue";
 
 const wishItemStore = useWishItemStore()
 

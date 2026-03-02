@@ -11,10 +11,13 @@ use App\Repository\UserRepository;
 use App\State\UserMeProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Context;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert; // assertions
 
 #[ApiResource(
     operations: [
@@ -115,6 +118,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: WishItem::class, mappedBy: 'owner', orphanRemoval: true)]
     private Collection $wishItems;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
+    #[Assert\PositiveOrZero]
+    #[Context(['disable_type_enforcement' => true])] // we disable type enforcement to allows get something else than string (because  decimal is mapped to string in DBAL)
+    private ?float $maxPrice = null;
 
     public function __construct()
     {
@@ -365,6 +374,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $wishItem->setOwner(null);
             }
         }
+
+        return $this;
+    }
+
+
+    public function getMaxPrice(): ?float
+    {
+        return $this->maxPrice;
+    }
+
+    public function setMaxPrice(?float $maxPrice): static
+    {
+        $this->maxPrice = $maxPrice;
 
         return $this;
     }

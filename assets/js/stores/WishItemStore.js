@@ -47,7 +47,7 @@ export const useWishItemStore = defineStore('wishItem', {
             const index = this.items.findIndex(i => i['@id'] === item['@id'])
 
             if (index === -1) {
-                this.items.push(item)
+                this.items.unshift(item) // add at the beginning
             } else {
                 this.items[index] = item
             }
@@ -66,7 +66,6 @@ export const useWishItemStore = defineStore('wishItem', {
 
             try {
                 const response = await WishItemService.fetch(filters, page, perPage)
-                debugger;
                 this.items = response.member
                 this.pagination.totalItems = response.totalItems
                 this.pagination.page = page
@@ -86,7 +85,6 @@ export const useWishItemStore = defineStore('wishItem', {
             try {
                 const created = await WishItemService.post(payload)
                 this.upsertItem(created.data)
-                debugger;
                 return created
             } catch (err) {
                 this.error = err.response?.data || err.message
@@ -97,13 +95,11 @@ export const useWishItemStore = defineStore('wishItem', {
         },
 
         async update(url, payload, config = {}) {
-            debugger;
             this.saving = true
             this.error = null
 
             try {
                 const updated = await WishItemService.patch(url, payload, config)
-                debugger;
                 this.upsertItem(updated.data)
                 return updated
             } catch (err) {
@@ -117,7 +113,6 @@ export const useWishItemStore = defineStore('wishItem', {
         async remove(id, config = {}) {
             this.saving = true
             this.error = null
-            debugger;
             try {
                 await WishItemService.delete(id, config)
                 this.removeById(id)

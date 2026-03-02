@@ -81,16 +81,16 @@
             {% endfor %}
         {% endfor %}
     </div>
-
+    {# this is for vue alerts #}
     {% block body %}{% endblock %}
-</main>
 
+</main>
 <footer class="mt-auto border-top py-4 bg-light">
     <div class="container text-center small text-muted">
         © {{ "now"|date("Y") }} WishHelper - Demo Project (Symfony + Vue)
     </div>
 </footer>
-
+<div id="global-toast"></div>
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}
 {% endblock %}

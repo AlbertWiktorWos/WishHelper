@@ -189,7 +189,6 @@ const backendErrors = computed(() => {
 })
 
 const handleSubmit = async (e) => {
-  debugger;
   e.preventDefault()
   const isValid = await v$.value.$validate()
 

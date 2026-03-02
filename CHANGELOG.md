@@ -1,3 +1,6 @@
+## [02.03.2025]
+- Implementing Loader, Toast and BaseModal components
+- Adding maxPrice field for User
 ## [28.02.2025]
 - Wishes recommendation with notifications
 ## [27.02.2025]

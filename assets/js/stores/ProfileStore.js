@@ -6,6 +6,7 @@ import ProfileService from '@js/services/ProfileService'
  * @property {number|string} id
  * @property {null|string} nickName
  * @property {string} email
+ * @property {null|string} maxPrice
  */
 
 export const useProfileStore = defineStore('profile', {

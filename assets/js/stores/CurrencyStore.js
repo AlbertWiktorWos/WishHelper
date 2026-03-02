@@ -41,7 +41,6 @@ export const useCurrencyStore = defineStore('Currency', {
          * @param {string} query
          */
         async search(query = '') {
-            debugger;
             this.loading = true
             this.error = null
             try {

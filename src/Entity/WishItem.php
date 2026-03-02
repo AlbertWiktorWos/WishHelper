@@ -75,8 +75,8 @@ class WishItem
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     #[Groups(['wish:read', 'wish:write', 'recommendation:read'])]
     #[Assert\PositiveOrZero]
-    #[Context(['disable_type_enforcement' => true])]
-    private ?string $price = null;
+    #[Context(['disable_type_enforcement' => true])] // we disable type enforcement to allows get something else than string (because  decimal is mapped to string in DBAL)
+    private ?float $price = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['wish:read', 'wish:write', 'recommendation:read'])]
@@ -156,12 +156,12 @@ class WishItem
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice(?string $price): static
+    public function setPrice(?float $price): static
     {
         $this->price = $price;
 

@@ -10,10 +10,10 @@ class ApiService {
 
     async get(id, config = {}) {
         try {
-            debugger;
             return await this.client.get(id, config)
         } catch (err) {
             console.error(err)
+            window.$toast('Error!', 'Getting information failed, please try again later', 'error')
             throw err
         }
     }
@@ -26,6 +26,7 @@ class ApiService {
 
             return await this.client.get(cleanUrl, config);
         } catch (err) {
+            window.$toast('Error!', 'Element was not founded, please try again later', 'error')
             console.error(err)
             throw err
         }
@@ -35,6 +36,7 @@ class ApiService {
         try {
             return await this.client.post('', data, config)
         } catch (err) {
+            window.$toast('Error!', 'Adding new element failed, please try again later', 'error')
             console.error(err)
             throw err
         }
@@ -50,6 +52,7 @@ class ApiService {
         try {
             return await this.client.patch(cleanUrl, data, config)
         } catch (err) {
+            window.$toast('Error!', 'Updating failed, please try again later', 'error')
             console.error(err)
             throw err
         }
@@ -64,6 +67,7 @@ class ApiService {
         try {
             return await this.client.delete(cleanUrl, config)
         } catch (err) {
+            window.$toast('Error!', 'Removing failed, please try again later', 'error')
             console.error(err)
             throw err
         }
