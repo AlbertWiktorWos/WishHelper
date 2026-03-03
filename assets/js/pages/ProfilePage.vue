@@ -193,7 +193,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted, computed, nextTick, readonly} from 'vue';
+import {ref, onMounted, computed, readonly} from 'vue';
 import { useProfileStore } from '@js/stores/ProfileStore';
 import { useCategoryStore } from '@js/stores/CategoryStore';
 import { useWishItemRecommendationStore } from '@js/stores/WishItemRecommendationStore';
@@ -204,6 +204,7 @@ import BaseSwitch from "@js/components/BaseSwitch.vue";
 import WishItemCard from "@js/components/wishitem/WishItemCard.vue";
 import WishItemService from "@js/services/WishItemService";
 import Loader from "@js/components/Loader.vue";
+import ApiService from "@js/services/ApiService";
 
 const store = useProfileStore();
 const categoriesStore = useCategoryStore();
@@ -225,7 +226,9 @@ onMounted(async () => {
     await categoriesStore.fetch();
   }
   if (wishItemRecommendationStore.items.length === 0){
-    await wishItemRecommendationStore.fetch();
+    await wishItemRecommendationStore.fetch({
+      isSeen: false
+    });
   }
 })
 
@@ -249,8 +252,16 @@ const handleCopy = async (recommendation) => {
     clone.currency = clone.currency['@id']
   }
   delete(clone['@id']);
-  await WishItemService.post(clone);
-  await handleNotificationSeen(recommendation)
+
+  try {
+    WishItemService.setErrorMassage('Error occurred during copying, please try again later');
+    await WishItemService.post(clone);
+  } catch (err) {
+    throw err
+  }
+
+  await handleNotificationSeen(recommendation);
+  window.$toast('Success!', 'The wish was successfully copied', 'success')
 }
 
 // checkbox categories computed
@@ -319,17 +330,10 @@ const uploadAvatar = () => {
     const file = e.target.files[0]
     const formData = new FormData()
     formData.append('file', file)
-    const response = await fetch('/api/profile/avatar', {
-      method: 'POST',
-      body: formData,
-    });
 
-    const data = await response.json();
-    store.data.avatarUrl = data.avatarUrl;
-
-    if(!store.error){
+      const response = await (new ApiService()).upload('/profile/avatar', formData)
+      store.data.avatarUrl = response.data.avatarUrl;
       window.$toast('Success!', 'Avatar was updated successfully', 'success')
-    }
 
   }
 

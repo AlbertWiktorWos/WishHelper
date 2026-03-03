@@ -93,6 +93,9 @@
 <div id="global-toast"></div>
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}
+    <script>
+        window.CSRF_TOKEN = "{{ csrf_token('global') }}";
+    </script>
 {% endblock %}
 </body>
 </html>

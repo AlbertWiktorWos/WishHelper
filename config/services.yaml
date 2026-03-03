@@ -40,3 +40,6 @@ services:
             $publicStorage: '@public.storage'
             $publicBaseUrl: '%public_base_url%'
 
+    App\EventListener\KernelViewListenerCSFR:
+        tags:
+            - { name: 'kernel.event_listener', event: 'kernel.view', method: 'onKernelView' }

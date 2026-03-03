@@ -11,7 +11,7 @@
         <i v-if="'info'===type" class="bi bi-bell me-2"></i>
         <i v-if="'error'===type" class="bi bi-dash-circle me-2"></i>
         <i v-if="'success'===type" class="bi bi-check2-circle  me-2"></i>
-        <i v-if="'alert'===type" class="bi bi-exclamation-diamond  me-2"></i>
+        <i v-if="'alert'===type" class="bi bi-exclamation-diamond me-2"></i>
 
 
         <strong class="me-auto">{{ title }}</strong>
@@ -35,15 +35,22 @@ const visible = ref(false)
 const title = ref('')
 const message = ref('')
 const type = ref('info')
+const alertTimeout = ref(null)
 
 function show(header, msg, alertType = 'info', timeout = 3000) {
+
+  // we delete the previous timeout
+  if (alertTimeout.value){
+    clearTimeout(alertTimeout.value);
+  }
+
   title.value = header;
   message.value = msg;
   type.value = alertType;
   visible.value = true;
 
   if (timeout) {
-    setTimeout(() => {
+    alertTimeout.value = setTimeout(() => {
       visible.value = false
     }, timeout)
   }

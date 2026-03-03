@@ -9,9 +9,12 @@ use App\Repository\UserRepository;
 use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -56,7 +59,17 @@ class AuthController extends AbstractController
         ValidatorInterface $validator,
         Mailer $mailer, // our service to send emails
         VerifyEmailHelperInterface $verifyEmailHelper, // from symfonycasts/verify-email-bundle
+        #[Target('register.limiter')] RateLimiterFactory $rateLimiter,
     ): Response {
+        // create a limiter based on a unique identifier of the client
+        $limiter = $rateLimiter->create($request->getClientIp());
+
+        // the argument of consume() is the number of tokens to consume
+        // and returns an object of type Limit
+        if (false === $limiter->consume(1)->isAccepted()) {
+            throw new TooManyRequestsHttpException();
+        }
+
         if (empty($request->getContent())) {
             return $this->render('auth/register.html.twig', ['errors' => []]);
         }

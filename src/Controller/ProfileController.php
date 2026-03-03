@@ -6,9 +6,12 @@ use App\Dto\AvatarUploadDTO;
 use App\Service\FileHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -31,7 +34,13 @@ final class ProfileController extends AbstractController
         FileHelper $uploader,
         ValidatorInterface $validator,
         EntityManagerInterface $em,
+        #[Target('upload.limiter')] RateLimiterFactory $rateLimiter,
     ): JsonResponse {
+        $limiter = $rateLimiter->create($request->getClientIp());
+        if (false === $limiter->consume(1)->isAccepted()) {
+            throw new TooManyRequestsHttpException();
+        }
+
         $dto = new AvatarUploadDTO();
         $dto->file = $request->files->get('file');
 

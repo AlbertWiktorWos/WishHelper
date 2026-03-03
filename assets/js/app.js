@@ -50,7 +50,6 @@ if (appElement) {
 // globalna funkcja
     window.$toast = (title, message, type = 'info', timeout = 3000) => {
         if (alertAppInstance) {
-            debugger;
             alertAppInstance.show(title, message, type, timeout)
         }
     }

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\WishItemRecommendationRepository;
 use Doctrine\DBAL\Types\Types;
@@ -15,6 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     paginationClientItemsPerPage: true,
     security: "is_granted('ROLE_USER')",
 )]
+#[ApiFilter(BooleanFilter::class, properties: ['isSeen'])]
 #[ORM\UniqueConstraint(name: 'uniq_wish_user', columns: ['wish_item_id', 'user_id'])]
 #[ORM\Entity(repositoryClass: WishItemRecommendationRepository::class)]
 class WishItemRecommendation

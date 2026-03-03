@@ -1,3 +1,6 @@
+## [03.03.2025]
+- Better toast notification when error occurs
+- Rate limiter and global CSRF protection
 ## [02.03.2025]
 - Implementing Loader, Toast and BaseModal components
 - Adding maxPrice field for User
