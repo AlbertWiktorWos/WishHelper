@@ -40,6 +40,7 @@ final class UserFactory extends PersistentProxyObjectFactory
             'country' => CountryFactory::new(),
             'categories' => [CategoryFactory::new()],
             'tags' => [TagFactory::new()],
+            'roles' => ['ROLE_USER'],
         ];
     }
 

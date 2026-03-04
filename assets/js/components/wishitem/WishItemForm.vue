@@ -91,6 +91,8 @@
         </div>
       </div>
 
+      <hr>
+
       <div class="d-flex justify-content-end gap-2">
         <button class="btn btn-accent" :disabled="saving">
           {{ saving ? 'Saving...' : 'Save' }}

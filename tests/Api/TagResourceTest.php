@@ -3,6 +3,7 @@
 namespace App\Tests\Api;
 
 use App\Factory\TagFactory;
+use App\Factory\UserFactory;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -15,11 +16,12 @@ class TagResourceTest extends ApiTestCase
     public function testGetTagCollection(): void
     {
         TagFactory::createMany(10);
+        $user = UserFactory::createOne();
 
-        $this->browser()->get('/api/tags')
+        $this->browser()->actingAs($user)->get('/api/tags')
             ->assertJson()
-            ->assertJsonMatches('"totalItems"', 10)
-            ->assertJsonMatches('length("member")', 10)
+            ->assertJsonMatches('"totalItems"', 11) // 10 + 1 from user
+            ->assertJsonMatches('length("member")', 11)
             ->assertJsonMatches('keys("member"[0])', [
                 '@id',
                 '@type',
@@ -30,14 +32,17 @@ class TagResourceTest extends ApiTestCase
     public function testGetTagItem(): void
     {
         $tag = TagFactory::createOne();
-        $this->browser()->get('/api/tags/'.$tag->getId())
+        $user = UserFactory::createOne();
+        $this->browser()->actingAs($user)->get('/api/tags/'.$tag->getId())
             ->assertJson()
             ->assertStatus(200);
     }
 
     public function testCreateTag(): void
     {
+        $user = UserFactory::createOne();
         $this->browser()
+            ->actingAs($user)
             ->post('/api/tags', [
                 'json' => [
                     'name' => 'electronics',
@@ -49,7 +54,9 @@ class TagResourceTest extends ApiTestCase
 
     public function testCreateTagFailsWhenNameBlank(): void
     {
+        $user = UserFactory::createOne();
         $this->browser()
+            ->actingAs($user)
             ->post('/api/tags', [
                 'json' => [
                     'name' => '',
@@ -61,7 +68,9 @@ class TagResourceTest extends ApiTestCase
 
     public function testCreateTagFailsWhenNameTooLong(): void
     {
+        $user = UserFactory::createOne();
         $this->browser()
+            ->actingAs($user)
             ->post('/api/tags', [
                 'json' => [
                     'name' => str_repeat('a', 101),
@@ -75,7 +84,10 @@ class TagResourceTest extends ApiTestCase
     {
         $tag = TagFactory::createOne(['name' => 'old']);
 
+        $user = UserFactory::createOne();
+
         $this->browser()
+            ->actingAs($user)
             ->patch('/api/tags/'.$tag->getId(), [
                 'json' => [
                     'name' => 'new',
@@ -90,8 +102,10 @@ class TagResourceTest extends ApiTestCase
     {
         $tag1 = TagFactory::createOne(['name' => 'test1']);
         $tag2 = TagFactory::createOne(['name' => 'test2']);
+        $user = UserFactory::createOne();
 
         $this->browser()
+            ->actingAs($user)
             ->patch('/api/tags/'.$tag2->getId(), [
                 'json' => [
                     'name' => 'test1',
@@ -103,7 +117,9 @@ class TagResourceTest extends ApiTestCase
 
     public function testGetNonExistingTag(): void
     {
+        $user = UserFactory::createOne();
         $this->browser()
+            ->actingAs($user)
             ->get('/api/tags/999999')
             ->assertStatus(404);
     }

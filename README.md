@@ -1,9 +1,17 @@
-# Whis Helper
-WishHelper is a web application designed to help users manage personal wishlists and discover meaningful gift ideas based on shared interests and categories.
+# Wish Helper
+WishHelper is a web application designed for managing personal wishlists and discovering gift ideas based on other users' interests. Built with Symfony 6.4, API Platform, Twig, and Vue 3, it offers full user authentication, email verification, and profile management including categories, tags, and country selection. Users can create, edit, share, and view their own wish items with attributes like title, description, category, tags, price, currency, and link. The frontend provides dynamic forms and interactive lists, synchronized with backend stores via Pinia.
+
+The application includes a wish search feature with a match algorithm that scores items by category, tags, and price constraints. Redis caching improves performance, and all operations respect security rules with ownership checks, CSRF protection, and rate limiting.
 
 ## Alpha
-The Alpha version focuses on building a stable technical foundation for future development. At this stage, the application implements a secure authentication system, a structured domain model, and a fully functional API layer prepared for wishlist management and matching logic.
-This phase prioritizes architecture, security, and extensibility over advanced integrations.
+The Alpha version focuses on building a stable technical foundation for future development. At this stage, the application implements a secure authentication system, a structured domain model, and a fully functional API layer prepared for wishlist management and matching logic. This phase prioritizes architecture, security, and extensibility over advanced integrations.
+
+## Preview
+![p_1.jpg](docs/preview/p_1.jpg)
+![p_2.jpg](docs/preview/p_2.jpg)
+![p_3.jpg](docs/preview/p_3.jpg)
+![p_4.jpg](docs/preview/p_4.jpg)
+![p_5.jpg](docs/preview/p_5.jpg)
 
 # CHANGELOG.md
 Look at the CHANGELOG.md to see what has been added!
@@ -42,7 +50,7 @@ We have to create new data source with mysql. Then in properties we added some c
 * Password `wh_tester`
 * Database `wh_database`
 
-## In main directory we create docker-compose.yml file to config our containers for MySql, PHP and Nginx
+## In main directory we create docker-compose.yml file to config our containers for MySql, PHP, Nginx and Redis
 ### PHP
 we create docker/php directory with Dockerfile with configuration where we:
 * PHP  is mapped on - '9000:9000'

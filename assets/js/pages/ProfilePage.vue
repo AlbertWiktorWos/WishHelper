@@ -9,12 +9,13 @@
       <div class="col-md-3">
 
         <!-- Avatar + nickname -->
+        <h3>{{ store.data.nickName ?? '-' }}</h3>
         <div class="d-flex align-items-center mb-4">
           <div class="position-relative">
             <img
                 :src="store.data.avatarUrl ?? require('@images/avatar.png')"
                 class="rounded-circle"
-                style="width: 120px; height: 120px; object-fit: cover;"
+                style="max-width: 150px; max-height: 150px; object-fit: cover;"
             />
             <button
                 class="btn btn-sm btn-secondary position-absolute bottom-0 end-0"
@@ -24,12 +25,11 @@
               <i class="bi bi-camera"></i>
             </button>
           </div>
-          <div class="ms-3">
-            <h3>{{ store.data.nickName ?? '-' }}</h3>
-            <p class="text-muted">Joined: {{ formattedDate(store.data.createdAt) ?? '-' }}</p>
-          </div>
         </div>
-        <p class="text-muted w-100 text-center">{{ store.data.email ?? '-' }}</p>
+        <div class="ms-3">
+          <p class="text-muted">Joined: {{ formattedDate(store.data.createdAt) ?? '-' }}</p>
+          <p class="text-muted w-100">{{ store.data.email ?? '-' }}</p>
+        </div>
 
         <!-- User data -->
         <div class="card p-3 mb-4">

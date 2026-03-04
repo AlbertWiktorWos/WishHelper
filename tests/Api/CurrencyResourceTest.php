@@ -3,6 +3,7 @@
 namespace App\Tests\Api;
 
 use App\Factory\CurrencyFactory;
+use App\Factory\UserFactory;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -15,11 +16,12 @@ class CurrencyResourceTest extends ApiTestCase
     public function testGetCurrencyCollection(): void
     {
         CurrencyFactory::createMany(4);
+        $user = UserFactory::createOne();
 
-        $this->browser()->get('/api/currencies')
+        $this->browser()->actingAs($user)->get('/api/currencies')
             ->assertJson()
-            ->assertJsonMatches('"totalItems"', 4)
-            ->assertJsonMatches('length("member")', 4)
+            ->assertJsonMatches('"totalItems"', 5) // 4 + 1 from user
+            ->assertJsonMatches('length("member")', 5)
             ->assertJsonMatches('keys("member"[0])', [
                 '@id',
                 '@type',
@@ -34,8 +36,9 @@ class CurrencyResourceTest extends ApiTestCase
 
     public function testGetCurrencyItem(): void
     {
+        $user = UserFactory::createOne();
         $currency = CurrencyFactory::createOne();
-        $this->browser()->get('/api/currencies/'.$currency->getId())
+        $this->browser()->actingAs($user)->get('/api/currencies/'.$currency->getId())
             ->assertJson()
             ->assertStatus(200);
     }

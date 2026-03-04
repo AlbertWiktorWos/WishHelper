@@ -45,7 +45,6 @@ use Symfony\Component\Validator\Constraints as Assert; // assertions
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-// #[ORM\EntityListeners([UserTagListener::class])] // we declare that in services.yaml
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -377,7 +376,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
 
     public function getMaxPrice(): ?float
     {

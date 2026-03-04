@@ -84,10 +84,8 @@
                 <label class="form-check-label" for="agree">
                   I accept the terms
                 </label>
-                <div class="invalid-feedback" v-if="v$.agreeTerms.$error">
-                  <div class="invalid-feedback" v-for="err in v$.agreeTerms.$errors" :key="err.$validator">
-                    {{ err.$message }}
-                  </div>
+                <div class="invalid-feedback" v-for="err in v$.agreeTerms.$errors" :key="err.$validator">
+                  {{ err.$message }}
                 </div>
               </div>
 
@@ -161,6 +159,7 @@ const rules = () => ({
   },
   agreeTerms: {
     required: helpers.withMessage('You must accept the non-existent regulations!', required),
+    sameAs: helpers.withMessage('You must accept the non-existent regulations!', sameAs(true))
     },
 });
 

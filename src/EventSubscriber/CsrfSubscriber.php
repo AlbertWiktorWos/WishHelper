@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -12,6 +13,7 @@ class CsrfSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private CsrfTokenManagerInterface $csrfTokenManager,
+        private Security $security,
     ) {
     }
 
@@ -25,6 +27,11 @@ class CsrfSubscriber implements EventSubscriberInterface
     public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
+        $user = $this->security->getUser();
+
+        if ($user && in_array('ROLE_ADMIN', $user->getRoles())) {
+            return;
+        }
 
         if ($request->isMethodSafe() || !str_starts_with($request->getPathInfo(), '/api')) {
             return;

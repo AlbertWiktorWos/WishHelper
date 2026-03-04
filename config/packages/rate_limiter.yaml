@@ -5,13 +5,16 @@ framework:
       policy: 'fixed_window' #setting a limit for a given interval of time (e.g. 100 requests per minute).
       limit: 1000
       interval: '1 minute'
+      cache_pool: 'cache.limiter'
 
     register:
       policy: 'sliding_window' # similar as above, but then using a 1 minute window that slides over the timeline
-      limit: 1
+      limit: 20
       interval: '1 minute'
+      cache_pool: 'cache.limiter'
 
     upload:
       policy: 'token_bucket' # user can make 10 requests every 1 minute (it's accumulate to max 100)
       limit: 10
       rate: { interval: '1 minute', amount: 10 }
+      cache_pool: 'cache.limiter'

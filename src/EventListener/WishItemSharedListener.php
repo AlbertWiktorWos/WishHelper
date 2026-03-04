@@ -50,10 +50,7 @@ class WishItemSharedListener implements EventSubscriberInterface
                 continue;
             }
 
-            $preferredCategoryIds = array_map(fn ($c) => $c->getId(), $user->getCategories()->toArray());
-            $preferredTagIds = array_map(fn ($t) => $t->getId(), $user->getTags()->toArray());
-
-            $score = $this->calculator->calculate($wishItem, $preferredCategoryIds, $preferredTagIds, $user->getMaxPrice());
+            $score = $this->calculator->getMatchScore($wishItem, $user);
 
             // to low score - continue
             if ($score <= 50) {

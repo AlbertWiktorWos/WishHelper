@@ -59,13 +59,10 @@ final class WishItemProvider implements ProviderInterface
                 continue;
             }
 
-            $score = $this->calculator->calculate(
+            $score = $this->calculator->getMatchScore(
                 $item,
-                $preferredCategoryIds,
-                $preferredTagIds,
-                $user->getMaxPrice()
+                $user
             );
-
             $item->setMatchPercentage($score);
         }
 

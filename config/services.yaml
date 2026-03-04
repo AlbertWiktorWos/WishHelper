@@ -43,3 +43,10 @@ services:
     App\EventListener\KernelViewListenerCSFR:
         tags:
             - { name: 'kernel.event_listener', event: 'kernel.view', method: 'onKernelView' }
+
+when@test:
+    services:
+        # we disable CSRF checking during tests
+        App\EventSubscriber\CsrfSubscriber: null
+        # we disable TagCleanupSubscriber during tests
+        App\EventSubscriber\TagCleanupSubscriber: null

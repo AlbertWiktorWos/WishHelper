@@ -3,6 +3,7 @@
 namespace App\Tests\Api;
 
 use App\Factory\CountryFactory;
+use App\Factory\UserFactory;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -14,11 +15,12 @@ class CountryResourceTest extends ApiTestCase
     public function testGetCountryCollection(): void
     {
         CountryFactory::createMany(4);
+        $user = UserFactory::createOne();
 
-        $this->browser()->get('/api/countries')
+        $this->browser()->actingAs($user)->get('/api/countries')
             ->assertJson()
-            ->assertJsonMatches('"totalItems"', 4)
-            ->assertJsonMatches('length("member")', 4)
+            ->assertJsonMatches('"totalItems"', 5) // 4+1 from user
+            ->assertJsonMatches('length("member")', 5)
             ->assertJsonMatches('keys("member"[0])', [
                 '@id',
                 '@type',
@@ -32,7 +34,8 @@ class CountryResourceTest extends ApiTestCase
     public function testGetCountryItem(): void
     {
         $country = CountryFactory::createOne();
-        $this->browser()->get('/api/countries/'.$country->getId())
+        $user = UserFactory::createOne();
+        $this->browser()->actingAs($user)->get('/api/countries/'.$country->getId())
             ->assertJson()
             ->assertStatus(200);
     }

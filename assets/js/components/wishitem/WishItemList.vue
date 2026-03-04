@@ -210,6 +210,8 @@ const categorySearch = ref(null)
 const currentPage = computed(() => wishItemStore.pagination.page)
 const totalPages = computed(() => wishItemStore.totalPages)
 
+const emit = defineEmits(['filtersChanged'])
+
 // computed(rules) allows to react to the dynamic currency <-> >price relationship
 const rules = computed(() => ({
   priceFrom: {
@@ -324,6 +326,9 @@ const changeFilters = async () => {
 
   userFilters.value = params;
   await wishItemStore.fetch({ ...props.filters, ...params });
+
+  // notify parent that filters have changed
+  emit('filtersChanged', { ...props.filters, ...params })
 }
 
 const nextPage = async () => {

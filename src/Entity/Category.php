@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CategoryRepository;
+use App\State\CachedCategoryCollectionProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -16,7 +17,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new GetCollection(),
     ],
     normalizationContext: ['groups' => ['category:read']],
-    order: ['name' => 'ASC']
+    order: ['name' => 'ASC'],
+    provider: CachedCategoryCollectionProvider::class,
 )]
 #[UniqueEntity('name')]
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]

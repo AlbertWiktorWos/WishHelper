@@ -34,6 +34,7 @@
             :loading="wishItemStore.loading"
             @copy="handleCopy"
             mode="readonly"
+            @filtersChanged="onFiltersChanged"
         />
 
     </div>
@@ -68,6 +69,10 @@ onMounted(async () => {
 
   await wishItemStore.fetch(filters.value);
 })
+
+const onFiltersChanged = (newFilters) => {
+  filters.value = newFilters;
+}
 
 const handleCopy = async (item) => {
   itemToCopy.value = item;

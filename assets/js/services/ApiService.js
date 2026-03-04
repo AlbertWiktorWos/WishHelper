@@ -14,7 +14,6 @@ class ApiService {
         // by interceptors we can config requests (or responses) before they are handled
         this.client.interceptors.request.use(
             config => {
-
                 if(this.isLoggingOut){
                     return false;
                 }
@@ -25,7 +24,7 @@ class ApiService {
                     config.headers['X-CSRF-TOKEN'] = token
                 }
                 // if it's not by form we set 'application/json'
-                if (!(config.data instanceof FormData)) {
+                if (!(config.data instanceof FormData) && config.method !== 'patch') {
                     config.headers['Content-Type'] = 'application/json'
                 }
 

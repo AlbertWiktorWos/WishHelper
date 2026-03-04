@@ -15,6 +15,18 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
  */
 class TagCleanupSubscriber implements EventSubscriber
 {
+    private bool $enabled = true;
+
+    public function disable(): void
+    {
+        $this->enabled = false;
+    }
+
+    public function enable(): void
+    {
+        $this->enabled = true;
+    }
+
     public function __construct(
         private TagService $tagService,
     ) {
@@ -29,6 +41,10 @@ class TagCleanupSubscriber implements EventSubscriber
 
     public function postPersist(LifecycleEventArgs $args): void
     {
+        if (!$this->enabled) {
+            return;
+        }
+
         $this->cleanupIfTagsChanged($args);
     }
 
@@ -45,6 +61,6 @@ class TagCleanupSubscriber implements EventSubscriber
             $this->tagService->cleanupTagsForEntity();
         }
 
-         // nothing has changed
+        // nothing has changed
     }
 }

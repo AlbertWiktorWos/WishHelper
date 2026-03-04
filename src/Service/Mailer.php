@@ -51,9 +51,9 @@ class Mailer
         /**
          * Prepare email to send.
          */
-        $email = (new TemplatedEmail()) // or just Email() if we dont use template
+        $email = (new TemplatedEmail())
         ->to(new Address($user->getEmail(), $user->getNickName()))
-        ->subject('Welcome to the WishHelper!') // subject of our email
+        ->subject('Check out the new matching wish!')
             ->htmlTemplate('email/wishRecommendation.html.twig')
             ->context([
                 'user' => $user,

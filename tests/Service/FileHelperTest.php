@@ -19,7 +19,6 @@ class FileHelperTest extends TestCase
         $filesystem = $this->createMock(FilesystemOperator::class);
         $logger = $this->createMock(LoggerInterface::class);
 
-
         // we expect writeStream to be called 1 time
         $filesystem->expects($this->once())
             ->method('writeStream')

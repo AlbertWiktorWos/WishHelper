@@ -2,6 +2,8 @@
 
 namespace App\Tests\Api;
 
+use App\Factory\CategoryFactory;
+use App\Factory\CurrencyFactory;
 use App\Factory\UserFactory;
 use App\Factory\WishItemFactory;
 use Zenstruck\Foundry\Test\Factories;
@@ -12,9 +14,10 @@ class WishItemResourceTest extends ApiTestCase
     use ResetDatabase; // Trait to reset the database before each test
     use Factories; // Trait to use Zenstruck Foundry factories
 
-    public function testGetWishItemCollection(): void
+    public function testGetWishItemCollectionWithoutAuth(): void
     {
         WishItemFactory::createMany(15);
+        $user = UserFactory::createOne();
 
         $this->browser()->get('/api/wish_items')
             ->assertJson()
@@ -38,10 +41,11 @@ class WishItemResourceTest extends ApiTestCase
         // ]);
     }
 
-    public function testGetWishItem(): void
+    public function testGetWishItemWithoutAuth(): void
     {
         $wish = WishItemFactory::createOne();
-        $this->browser()->get('/api/wish_items/'.$wish->getId())
+        $this->browser()
+            ->get('/api/wish_items/'.$wish->getId())
             ->assertJson()
             ->assertStatus(401);
     }
@@ -76,6 +80,8 @@ class WishItemResourceTest extends ApiTestCase
         $wish = WishItemFactory::createOne([
             'owner' => $user,
         ]);
+        $currency = CurrencyFactory::createOne();
+        $categ = CategoryFactory::createOne();
 
         $this->browser()
             ->actingAs($user)
@@ -84,8 +90,8 @@ class WishItemResourceTest extends ApiTestCase
                     'title' => 'Updated title',
                     'price' => '20.00',
                     'shared' => true,
-                    'category' => '/api/categories/1',
-                    'currency' => '/api/currencies/1',
+                    'category' => '/api/categories/'.$categ->getId(),
+                    'currency' => '/api/currencies/'.$currency->getId(),
                 ],
                 'headers' => ['Content-Type' => 'application/merge-patch+json'],
             ])
@@ -110,7 +116,6 @@ class WishItemResourceTest extends ApiTestCase
                 ],
                 'headers' => ['Content-Type' => 'application/merge-patch+json'],
             ])
-            ->dump()
             ->assertStatus(403);
     }
 
@@ -141,5 +146,4 @@ class WishItemResourceTest extends ApiTestCase
             ->delete('/api/wish_items/'.$wish->getId())
             ->assertStatus(403);
     }
-
 }

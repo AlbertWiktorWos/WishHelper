@@ -1,19 +1,19 @@
 <template>
   <div ref="modalRef" class="modal fade" tabindex="-1">
     <div :class="['modal-dialog', sizeClass]">
-      <div class="modal-content modal-dialog-centered">
+      <div class="modal-content">
 
         <div v-if="$slots.header" class="modal-header">
           <slot name="header" />
           <button
               v-if="closable"
               type="button"
-              class="btn-close"
+              class="btn-close ms-auto"
               @click="hide"
           />
         </div>
 
-        <div class="modal-body">
+        <div class="modal-body p-4">
           <slot />
         </div>
 

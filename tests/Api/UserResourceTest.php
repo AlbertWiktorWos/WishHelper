@@ -14,11 +14,12 @@ class UserResourceTest extends ApiTestCase
     public function testGetUserCollection(): void
     {
         UserFactory::createMany(5);
+        $user = UserFactory::createOne();
 
-        $this->browser()->get('/api/users')
+        $this->browser()->actingAs($user)->get('/api/users')
             ->assertJson()
-            ->assertJsonMatches('"totalItems"', 5)
-            ->assertJsonMatches('length("member")', 5)
+            ->assertJsonMatches('"totalItems"', 6)
+            ->assertJsonMatches('length("member")', 6)
             ->assertJsonMatches('keys("member"[0])', [
                 '@id',
                 '@type',
@@ -37,7 +38,7 @@ class UserResourceTest extends ApiTestCase
     public function testGetUserItem(): void
     {
         $user = UserFactory::createOne();
-        $this->browser()->get('/api/users/'.$user->getId())
+        $this->browser()->actingAs($user)->get('/api/users/'.$user->getId())
             ->assertJson()
             ->assertStatus(200);
     }
@@ -84,7 +85,6 @@ class UserResourceTest extends ApiTestCase
                 ],
                 'headers' => ['Content-Type' => 'application/merge-patch+json'],
             ])
-            ->dump()
             ->assertStatus(200)
             ->assertJsonMatches('nickName', 'changed');
     }
@@ -104,7 +104,4 @@ class UserResourceTest extends ApiTestCase
             ])
             ->assertStatus(403);
     }
-
-
-
 }

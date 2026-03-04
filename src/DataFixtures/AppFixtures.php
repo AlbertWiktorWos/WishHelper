@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Category;
 use App\Entity\Country;
 use App\Entity\Currency;
+use App\EventSubscriber\TagCleanupSubscriber;
 use App\Factory\TagFactory;
 use App\Factory\UserFactory;
 use App\Factory\WishItemFactory;
@@ -52,8 +53,15 @@ class AppFixtures extends Fixture
         'PL' => self::COUNTRY_PL,
     ];
 
+    public function __construct(
+        private TagCleanupSubscriber $tagCleanupSubscriber,
+    ) {
+    }
+
     public function load(ObjectManager $manager): void
     {
+        $this->tagCleanupSubscriber->disable();
+
         $currencies = [];
         foreach (self::CURRENCIES as $data) {
             $currency = new Currency();
@@ -88,18 +96,19 @@ class AppFixtures extends Fixture
             $categories[] = $category;
         }
 
-        TagFactory::new()->createMany(40); // 20 random tags
-
+        TagFactory::createMany(40); // 20 random tags
         // we add admin user
         UserFactory::createOne([
             'email' => 'admin@admin.com',
-            'password' => password_hash('admin', PASSWORD_BCRYPT),
-            'categories' => [$categories[array_rand($categories)]],
+            'password' => password_hash('admin@admin.com', PASSWORD_BCRYPT),
+            'categories' => $categories,
             'country' => $countries[array_rand($countries)],
+            'roles' => ['ROLE_ADMIN'],
+            'verified' => true,
         ]);
 
         // --- UŻYTKOWNICY ---
-        UserFactory::new()->createMany(20, function () use ($countries, $categories) {
+        UserFactory::createMany(20, function () use ($countries, $categories) {
             $randomCountry = $countries[array_rand($countries)];
             $randomCategory = $categories[array_rand($categories)];
 
@@ -110,7 +119,7 @@ class AppFixtures extends Fixture
             ];
         });
 
-        WishItemFactory::new()->createMany(100, function () use ($categories, $currencies) {
+        WishItemFactory::createMany(100, function () use ($categories, $currencies) {
             $randomCategory = $categories[array_rand($categories)];
             $randomCurrency = $currencies[array_rand($currencies)];
 

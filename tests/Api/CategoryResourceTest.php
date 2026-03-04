@@ -3,6 +3,7 @@
 namespace App\Tests\Api;
 
 use App\Factory\CategoryFactory;
+use App\Factory\UserFactory;
 use Zenstruck\Browser\Json;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
@@ -16,11 +17,12 @@ class CategoryResourceTest extends ApiTestCase
     public function testGetCategoryCollection(): void
     {
         CategoryFactory::createMany(5);
+        $user = UserFactory::createOne();
 
-        $this->browser()->get('/api/categories')
+        $this->browser()->actingAs($user)->get('/api/categories')
             ->assertJson()
-            ->assertJsonMatches('"totalItems"', 5)
-            ->assertJsonMatches('length("member")', 5)
+            ->assertJsonMatches('"totalItems"', 6) // 5 + 1 from user
+            ->assertJsonMatches('length("member")', 6)
             ->use(function (Json $json) {
                 $json->assertMatches('keys("member"[0])', [
                     '@id',
@@ -36,7 +38,8 @@ class CategoryResourceTest extends ApiTestCase
     public function testGetCategoryItem(): void
     {
         $category = CategoryFactory::createOne();
-        $this->browser()->get('/api/categories/'.$category->getId())
+        $user = UserFactory::createOne();
+        $this->browser()->actingAs($user)->get('/api/categories/'.$category->getId())
             ->assertJson()
             ->assertStatus(200);
     }

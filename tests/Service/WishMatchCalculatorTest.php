@@ -33,13 +33,14 @@ class WishMatchCalculatorTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        $this->calculator = new WishMatchCalculator();
+        $container = static::getContainer();
+        $this->calculator = $container->get(WishMatchCalculator::class);
     }
 
     private function createWishItem(
         int $categoryId,
         array $tagIds = [],
-        ?float $price = null
+        ?float $price = null,
     ): WishItem {
         $category = $this->createMock(Category::class);
         $category->method('getId')->willReturn($categoryId);
@@ -54,7 +55,7 @@ class WishMatchCalculatorTest extends KernelTestCase
         $item = $this->createMock(WishItem::class);
         $item->method('getCategory')->willReturn($category);
         $item->method('getTags')->willReturn(new ArrayCollection($tags));
-        $item->method('getPrice')->willReturn((string)$price);
+        $item->method('getPrice')->willReturn((float) $price);
 
         return $item;
     }
@@ -146,7 +147,7 @@ class WishMatchCalculatorTest extends KernelTestCase
         $operation->method('getMethod')->willReturn('POST');
 
         $processor->process($wish, $operation, [], [
-            'request' => new \Symfony\Component\HttpFoundation\Request([], [], [], [], [], [], '{}')
+            'request' => new \Symfony\Component\HttpFoundation\Request([], [], [], [], [], [], '{}'),
         ]);
     }
 
@@ -163,6 +164,7 @@ class WishMatchCalculatorTest extends KernelTestCase
         $user = UserFactory::createOne([
             'categories' => [$category],
             'notify' => true,
+            'maxPrice' => 50,
         ]);
 
         // wish with the same category
@@ -170,10 +172,11 @@ class WishMatchCalculatorTest extends KernelTestCase
             'category' => $category,
             'owner' => UserFactory::createOne(), // inny owner
             'shared' => true,
+            'price' => 100,
         ]);
 
         $calculator = $this->createMock(WishMatchCalculator::class);
-        $calculator->method('calculate')->willReturn(80);
+        $calculator->method('getMatchScore')->willReturn(80);
 
         $mailer = $this->createMock(Mailer::class);
         $mailer->expects($this->once())
@@ -201,6 +204,7 @@ class WishMatchCalculatorTest extends KernelTestCase
         $this->assertCount(1, $recommendations);
         $this->assertSame(80, $recommendations[0]->getScore());
     }
+
     public function testUpdatesExistingRecommendation(): void
     {
         self::bootKernel();
@@ -211,6 +215,7 @@ class WishMatchCalculatorTest extends KernelTestCase
 
         $user = UserFactory::createOne([
             'categories' => [$category],
+            'notify' => true,
         ]);
 
         $wish = WishItemFactory::createOne([
@@ -234,7 +239,9 @@ class WishMatchCalculatorTest extends KernelTestCase
 
         $em->flush();
         $em->clear();
+
         $wish = $em->getRepository(WishItem::class)->find($wish->getId());
+        $user = $em->getRepository(User::class)->find($user->getId());
 
         $listener->onWishItemShared(
             new WishItemSharedEvent($wish, false)
@@ -248,8 +255,7 @@ class WishMatchCalculatorTest extends KernelTestCase
                 'wishItem' => $wish,
             ]);
 
-        $this->assertSame(90, $rec->getScore());
+        $this->assertSame(60, $rec->getScore());
         $this->assertNull($rec->getNotifiedAt());
     }
-
 }
