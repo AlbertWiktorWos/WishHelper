@@ -50,6 +50,11 @@ We have to create new data source with mysql. Then in properties we added some c
 * Password `wh_tester`
 * Database `wh_database`
 
+## Integration
+At this moment, the Wish Helper app supports currency integration. To start the integration and update currencies, run the following command in the container:
+`php bin/console app:currency-integration USD,EUR,PLN`
+where currencies separated by commas are optional. The basis for calculations is USD.
+
 ## In main directory we create docker-compose.yml file to config our containers for MySql, PHP, Nginx and Redis
 ### PHP
 we create docker/php directory with Dockerfile with configuration where we:

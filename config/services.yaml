@@ -5,6 +5,9 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     public_base_url: '/uploads'
+    currency_api.url: 'https://api.freecurrencyapi.com/v1'
+    currency_api.key: '%env(CURRENCY_API_KEY)%'
+    currency_api.defaultCurrency: '%env(CURRENCY_API_DEFAULT_CURRENCY)%'
 
 services:
     # default configuration for services in *this* file
@@ -44,9 +47,34 @@ services:
         tags:
             - { name: 'kernel.event_listener', event: 'kernel.view', method: 'onKernelView' }
 
+    App\Integration\RestIntegration\CurrencyApi\CurrencyApiClientInterface:
+        class: App\Integration\RestIntegration\CurrencyApi\CurrencyApiClient
+        arguments:
+            $apiKey: '%currency_api.key%'
+            $baseUrl: '%currency_api.url%'
+
+    App\Integration\RestIntegration\CurrencyApi\Provider\CurrencyRatesProvider:
+        arguments:
+            $defaultBaseCurrency: '%currency_api.defaultCurrency%'
+
+
 when@test:
     services:
         # we disable CSRF checking during tests
         App\EventSubscriber\CsrfSubscriber: null
         # we disable TagCleanupSubscriber during tests
         App\EventSubscriber\TagCleanupSubscriber: null
+
+        App\Integration\RestIntegration\CurrencyApi\CurrencyApiClientInterface:
+            class: App\Integration\RestIntegration\CurrencyApi\MockCurrencyApiClient
+            arguments:
+                $baseUrl: 'test'
+
+        App\Service\CurrencyUpdater:
+            public: true
+            arguments:
+                $currencyRatesProvider: '@App\Integration\RestIntegration\CurrencyApi\Provider\CurrencyRatesProvider'
+                $currenciesInfoProvider: '@App\Integration\RestIntegration\CurrencyApi\Provider\CurrenciesInfoProvider'
+                $repository: '@App\Repository\CurrencyRepository'
+                $em: '@doctrine.orm.entity_manager'
+                $logger: '@monolog.logger'

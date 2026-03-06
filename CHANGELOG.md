@@ -1,3 +1,5 @@
+## [06.03.2026]
+- Currencies integration with command to run integration
 # [ALPHA]
 ## [04.03.2026]
 - Polishing README.md
