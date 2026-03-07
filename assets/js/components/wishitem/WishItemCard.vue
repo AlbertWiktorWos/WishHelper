@@ -8,7 +8,8 @@
       <!-- PRICE SECTION -->
       <div class="mb-2">
         <strong>Price:</strong>
-        <span class="text-muted">{{ item.price ?? '-' }} {{ item.currency ? item.currency.code : '' }}</span>
+        <span>{{ item.price ?? '-' }} {{ item.currency ? item.currency.code : '' }}</span>
+        <span class="ms-2 text-muted">{{ item.priceInfoInUserCurrency ?? '' }}</span>
       </div>
 
       <!-- DESCRIPTION -->

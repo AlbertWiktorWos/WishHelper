@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CountryRepository;
+use App\State\CachedDictionaryCollectionProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -16,7 +17,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(),
         new GetCollection(),
     ],
-    normalizationContext: ['groups' => ['country:read']]
+    normalizationContext: ['groups' => ['country:read']],
+    provider: CachedDictionaryCollectionProvider::class
 )]
 #[ApiFilter(SearchFilter::class, properties: [
     'name' => 'partial', // allows filtering by part of the name

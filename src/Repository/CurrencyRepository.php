@@ -26,4 +26,13 @@ class CurrencyRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+    public function findAllIndexedByCode(): array
+    {
+        return $this->createQueryBuilder('c', 'c.code')
+            ->orderBy('c.code', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

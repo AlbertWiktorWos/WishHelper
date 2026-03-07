@@ -2,10 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CurrencyRepository;
+use App\State\CachedDictionaryCollectionProvider;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -15,8 +18,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(),
         new GetCollection(),
     ],
-    normalizationContext: ['groups' => ['currency:read']]
+    normalizationContext: ['groups' => ['currency:read']],
+    provider: CachedDictionaryCollectionProvider::class
 )]
+#[ApiFilter(SearchFilter::class, properties: [
+    'name' => 'partial', // allows filtering by part of the name
+])]
 #[ORM\Entity(repositoryClass: CurrencyRepository::class)]
 class Currency
 {

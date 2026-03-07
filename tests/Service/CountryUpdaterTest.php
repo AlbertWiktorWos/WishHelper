@@ -27,11 +27,10 @@ class CountryUpdaterTest extends KernelTestCase
 
     public function testCreatesCountries(): void
     {
-        CurrencyFactory::createOne([
+        $currency = CurrencyFactory::createOne([
             'code' => 'USD',
             'exchangeRate' => 999,
         ]);
-
         $result = $this->updater->update();
         $this->assertCount(3, $result);
         $this->assertEquals('Poland', $result['PL']->getName());

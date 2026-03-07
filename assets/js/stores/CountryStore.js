@@ -13,6 +13,9 @@ export const useCountryStore = defineStore('country', {
         data: [],
         loading: false,
         error: null,
+
+        loadedPage: 1,
+        hasMore: false,
     }),
     actions: {
 
@@ -55,10 +58,12 @@ export const useCountryStore = defineStore('country', {
                 const res = await CountryService.search(query);
                 // API can return {data: [...]}, we map to our structure
                 this.data = this.mapCountries(res);
+                this.setHasMore(res);
             } catch (err) {
                 this.error = err.message || 'Error fetching countries'
             } finally {
                 this.loading = false
+                this.loadedPage = 1;
             }
         },
 
@@ -72,8 +77,30 @@ export const useCountryStore = defineStore('country', {
             try {
                 const res = await CountryService.fetch(params)
                 this.data = this.mapCountries(res);
+                this.setHasMore(res);
             } catch (err) {
                 this.error = err.message || 'Error fetching countries'
+            } finally {
+                this.loadedPage = 1;
+                this.loading = false
+            }
+        },
+
+        /**
+         * Fetch more countries by previous params         * @param {object} params
+         */
+        async fetchMore() {
+            this.loading = true
+            this.error = null
+            try {
+                this.loadedPage++;
+                const res = await CountryService.fetch(CountryService.lastFetchParams, this.loadedPage)
+                this.data = [...this.data, ...this.mapCountries(res)]
+                this.setHasMore(res);
+            } catch (err) {
+                this.error = err.message || 'Error fetching countries'
+                this.loadedPage--;
+                console.log(this.error);
             } finally {
                 this.loading = false
             }
@@ -92,9 +119,18 @@ export const useCountryStore = defineStore('country', {
             } catch (err) {
                 this.error = err.message || 'Error fetching countries'
             } finally {
+                this.loadedPage = 1;
                 this.loading = false
             }
             return this.data.length > 0 ? this.data[0] : null; // return the first country or null
         },
+
+        setHasMore(res){
+            if(!res.view?.next){
+                this.hasMore = false
+            }else{
+                this.hasMore = true
+            }
+        }
     },
 })

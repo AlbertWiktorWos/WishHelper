@@ -19,6 +19,7 @@ class CurrencyUpdater
         private CurrencyRepository $repository,
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
+        private \Symfony\Contracts\Cache\CacheInterface $cache,
     ) {
     }
 
@@ -87,6 +88,9 @@ class CurrencyUpdater
 
             $this->em->flush();
             $this->em->commit();
+
+            $this->cache->delete('currencies_collection');
+            $this->cache->delete('currency_rates');
         } catch (\Exception $exception) {
             $this->em->rollback();
             $this->logger->info(sprintf('an error occurred while updating the %s currency', $code));

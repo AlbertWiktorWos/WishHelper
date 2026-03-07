@@ -363,7 +363,11 @@ const scrollToTop = () => {
 
 // Actions
 const toggleShare = async (item) => {
-  await wishItemStore.update(item['@id'], { shared: !item.shared })
+  const shared = !item.shared;
+  await wishItemStore.update(item['@id'], { shared: shared })
+  if(!wishItemStore.error){
+    window.$toast('Success!', 'The wish was successfully set to '+(shared ? 'shared!' : 'private'), 'success')
+  }
 }
 
 </script>

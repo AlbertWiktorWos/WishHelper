@@ -31,7 +31,7 @@
 
     <!-- dropdown -->
     <ul v-if="showDropdown" class="list-group position-absolute w-100" style="z-index: 1000; max-height: 200px; overflow-y: auto;">
-      <li v-if="loading" class="list-group-item text-center text-muted">Loading...</li>
+      <li v-if="store.loading" class="list-group-item text-center text-muted">Loading...</li>
       <li v-else-if="!results || results.length === 0" class="list-group-item text-center text-muted">No results</li>
       <li
           v-for="item in results"
@@ -43,6 +43,13 @@
         <i v-if="item.icon" :class="['bi', item.icon]"></i>
         <span>{{ item.label }}</span>
 
+      </li>
+      <li
+          v-if="store.hasMore && !store.loading"
+          class="list-group-item text-center text-primary"
+          @mousedown.prevent="loadMore"
+      >
+        Load more
       </li>
     </ul>
   </div>
@@ -67,7 +74,6 @@ const emit = defineEmits(['update:modelValue']);
 const query = ref('');
 const results = ref([]);
 const showDropdown = ref(false);
-const loading = ref(false);
 
 // store to API depending on type
 let store
@@ -87,21 +93,21 @@ switch (props.type) {
 
 const debounceTimeout = ref(null)
 
+
+async function loadMore(){
+  await store.fetchMore();
+  results.value = store.data;
+}
 /**
  * we clear query and
  */
 async function onClearSelection(){
   query.value = '';
   emit('update:modelValue', null);   // we pass null as value
-  loading.value = true;
   results.value = [];
   showDropdown.value = true;
-  try {
-    await store.fetch();
-    results.value = store.data;
-  } finally {
-    loading.value = false;
-  }
+  await store.fetch();
+  results.value = store.data;
 }
 /**
  * It retrieves data from the API when the component is mounted. If the data is already in the store, it uses it immediately.
@@ -121,15 +127,10 @@ onMounted(async () => {
     }
   }
 
-  await store.fetch();
-  try {
     if(store.data.length === 0){
       await store.fetch();
     }
     results.value = store.data;
-  } finally {
-    loading.value = false;
-  }
 })
 
 const onInput = async () => {
@@ -140,18 +141,13 @@ const onInput = async () => {
 
   // we set a new timeout
   debounceTimeout.value = setTimeout(async () => {
-    loading.value = true;
-    try {
       if(query.value) {
         await store.search(query.value || '');
       }else{
-          await store.fetch(); // if query is empty, get all
+        await store.fetch(); // if query is empty, get all
       }
 
       results.value = store.data;
-    } finally {
-      loading.value = false;
-    }
   }, 300) // 300ms debounce
 }
 

@@ -6,6 +6,7 @@ use App\Entity\Country;
 use App\Entity\Currency;
 use App\Integration\SoapIntegration\CountryApi\Provider\CountryInfoProvider;
 use App\Repository\CountryRepository;
+use App\Repository\CurrencyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -13,9 +14,11 @@ class CountryUpdater
 {
     public function __construct(
         private CountryInfoProvider $countryInfoProvider,
-        private CountryRepository $repository,
+        private CountryRepository $countryRepository,
+        private CurrencyRepository $currencyRepository,
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
+        private \Symfony\Contracts\Cache\CacheInterface $cache,
         private string $defaultBaseCurrency = 'USD',
     ) {
     }
@@ -39,19 +42,18 @@ class CountryUpdater
         $this->em->beginTransaction();
         try {
             $code = '';
-            $defaultCurrency = $this->em->getRepository(Currency::class)->findOneBy(['code' => $this->defaultBaseCurrency]);
-
+            $defaultCurrency = $this->currencyRepository->findOneBy(['code' => $this->defaultBaseCurrency]);
             if (!$defaultCurrency) {
                 throw new \Exception('There is no default currency');
             }
-
+            $existingCurrencies = $this->currencyRepository->findAllIndexedByCode();
             $countriesToPersist = [];
 
             // fetching existing countries in the database
             if (!empty($codes)) {
-                $existingCountries = $this->repository->findCountriesByCodes($codes);
+                $existingCountries = $this->countryRepository->findCountriesByCodes($codes);
             } else {
-                $existingCountries = $this->repository->findAllCountries();
+                $existingCountries = $this->countryRepository->findAllIndexedByCode();
             }
 
             foreach ($countriesFromApi as $code => $dto) {
@@ -72,12 +74,14 @@ class CountryUpdater
                 }
                 $currency = null;
                 if ($dto->currency) {
-                    $currency = $this->em->getRepository(Currency::class)->findOneBy(['code' => $dto->currency]);
+                    $currency = $existingCurrencies[$dto->currency] ?? null;
                     if ($country->getCurrency()?->getCode() !== $currency?->getCode() && $currency) {
                         $country->setCurrency($currency);
                         $countryChanged = true;
                     }
-                } elseif (!$country->getCurrency()) {  // if we haven't set the currency, we need to set the default
+                }
+
+                if (!$country->getCurrency()) {  // if we haven't set the currency, we need to set the default
                     $country->setCurrency($defaultCurrency);
                     $countryChanged = true;
                 }
@@ -94,6 +98,8 @@ class CountryUpdater
             $this->em->commit();
 
             $this->logger->info(sprintf('%d countries successfully updated', count($countriesToPersist)));
+
+            $this->cache->delete('countries_collection');
 
             return $countriesToPersist;
         } catch (\Exception $e) {

@@ -63,6 +63,11 @@ services:
             $wsdl: 'http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL'
             $retries: 3
 
+    App\State\WishItemProvider:
+        class: App\State\WishItemProvider
+        arguments:
+            $defaultBaseCurrency: '%currency_api.defaultCurrency%'
+
 when@test:
     services:
         # we disable CSRF checking during tests
@@ -83,6 +88,7 @@ when@test:
                 $repository: '@App\Repository\CurrencyRepository'
                 $em: '@doctrine.orm.entity_manager'
                 $logger: '@monolog.logger'
+                $cache: '@cache.app'
 
         App\Integration\SoapIntegration\CountryApi\CountryCommInterface:
             class: App\Integration\SoapIntegration\CountryApi\MockCountryComm
@@ -93,7 +99,9 @@ when@test:
             public: true
             arguments:
                 $countryInfoProvider: '@App\Integration\SoapIntegration\CountryApi\Provider\CountryInfoProvider'
-                $repository: '@App\Repository\CountryRepository'
+                $countryRepository: '@App\Repository\CountryRepository'
+                $currencyRepository: '@App\Repository\CurrencyRepository'
                 $em: '@doctrine.orm.entity_manager'
                 $logger: '@monolog.logger'
+                $cache: '@cache.app'
                 $defaultBaseCurrency: '%currency_api.defaultCurrency%'

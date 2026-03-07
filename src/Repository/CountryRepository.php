@@ -27,7 +27,7 @@ class CountryRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findAllCountries(): array
+    public function findAllIndexedByCode(): array
     {
         return $this->createQueryBuilder('c', 'c.code')
             ->orderBy('c.code', 'ASC')

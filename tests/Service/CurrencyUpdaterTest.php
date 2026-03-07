@@ -14,6 +14,7 @@ use App\Service\CurrencyUpdater;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Contracts\Cache\CacheInterface;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -41,6 +42,7 @@ class CurrencyUpdaterTest extends KernelTestCase
         $infoProvider = $this->createMock(CurrenciesInfoProvider::class);
         $repo = $this->createMock(CurrencyRepository::class);
         $em = $this->createMock(EntityManagerInterface::class);
+        $cache = $this->createMock(CacheInterface::class);
 
         $rates = new LatestRatesResponse('USD', [
             'USD' => 1,
@@ -82,7 +84,8 @@ class CurrencyUpdaterTest extends KernelTestCase
             $infoProvider,
             $repo,
             $em,
-            new NullLogger()
+            new NullLogger(),
+            $cache
         );
 
         $result = $service->update();
@@ -104,6 +107,7 @@ class CurrencyUpdaterTest extends KernelTestCase
         $ratesProvider = $this->createMock(CurrencyRatesProvider::class);
         $infoProvider = $this->createMock(CurrenciesInfoProvider::class);
         $em = $this->createMock(EntityManagerInterface::class);
+        $cache = $this->createMock(CacheInterface::class);
 
         $rates = new LatestRatesResponse('USD', ['USD' => 1]);
 
@@ -125,7 +129,8 @@ class CurrencyUpdaterTest extends KernelTestCase
             $infoProvider,
             $repo,
             $em,
-            new NullLogger()
+            new NullLogger(),
+            $cache
         );
 
         $service->update(['USD']);

@@ -294,4 +294,17 @@ class WishItem
     {
         $this->matchPercentage = $matchPercentage;
     }
+
+    #[Groups(['wish:read'])]
+    private ?string $priceInfoInUserCurrency = null;
+
+    public function getPriceInfoInUserCurrency(): ?string
+    {
+        return $this->priceInfoInUserCurrency;
+    }
+
+    public function setPriceInfoInUserCurrency(?string $value): void
+    {
+        $this->priceInfoInUserCurrency = $value;
+    }
 }

@@ -11,6 +11,7 @@ import WishItemService from '@js/services/WishItemService'
  * @property {null|boolean} shared
  * @property {[]} category
  * @property {null|number}  matchPercentage
+ * @property {null|string}  priceInfoInUserCurrency
  */
 export const useWishItemStore = defineStore('wishItem', {
     state: () => ({

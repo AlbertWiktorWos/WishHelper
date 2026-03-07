@@ -1,4 +1,7 @@
 ## [07.03.2026]
+- Currency conversion for wishes by user selected country currency
+- Load more action for search component
+- Cache for countries and currencies get collection api and currency rate
 - Countries soap integration with command to run integration.
 - libxml2-dev enabled in php container.
 ## [06.03.2026]

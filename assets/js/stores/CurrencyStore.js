@@ -13,6 +13,9 @@ export const useCurrencyStore = defineStore('Currency', {
         data: [],
         loading: false,
         error: null,
+
+        loadedPage: 1,
+        hasMore: false,
     }),
     actions: {
 
@@ -47,10 +50,12 @@ export const useCurrencyStore = defineStore('Currency', {
                 const res = await CurrencyService.search(query)
                 // API can return {data: [...]}, we map to our structure
                 this.data = this.mapCurrencies(res);
+                this.setHasMore(res);
             } catch (err) {
                 this.error = err.message || 'Error fetching Currencies'
             } finally {
                 this.loading = false
+                this.loadedPage = 1;
             }
         },
 
@@ -64,8 +69,30 @@ export const useCurrencyStore = defineStore('Currency', {
             try {
                 const res = await CurrencyService.fetch(params)
                 this.data = this.mapCurrencies(res);
+                this.setHasMore(res);
             } catch (err) {
                 this.error = err.message || 'Error fetching Currencies'
+            } finally {
+                this.loadedPage = 1;
+                this.loading = false
+            }
+        },
+
+        /**
+         * Fetch more currencies by previous params
+         */
+        async fetchMore() {
+            this.loading = true
+            this.error = null
+            try {
+                this.loadedPage++;
+                const res = await CurrencyService.fetch(CurrencyService.lastFetchParams, this.loadedPage)
+                this.data = [...this.data, ...this.mapCurrencies(res)]
+                this.setHasMore(res);
+            } catch (err) {
+                this.error = err.message || 'Error fetching countries'
+                this.loadedPage--;
+                console.log(this.error);
             } finally {
                 this.loading = false
             }
@@ -84,9 +111,18 @@ export const useCurrencyStore = defineStore('Currency', {
             } catch (err) {
                 this.error = err.message || 'Error fetching Currencies'
             } finally {
+                this.loadedPage = 1;
                 this.loading = false
             }
             return this.data.length > 0 ? this.data[0] : null; // return the first Currency or null
         },
+
+        setHasMore(res){
+            if(!res.view?.next){
+                this.hasMore = false
+            }else{
+                this.hasMore = true
+            }
+        }
     },
 })

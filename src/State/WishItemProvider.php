@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Entity\User;
 use App\Entity\WishItem;
+use App\Service\CurrencyRateProvider;
 use App\Service\WishMatchCalculator;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -19,6 +20,8 @@ final class WishItemProvider implements ProviderInterface
         private readonly RequestStack $requestStack,
         private readonly WishMatchCalculator $calculator,
         private readonly Security $security,
+        private readonly CurrencyRateProvider $currencyConverter,
+        private string $defaultBaseCurrency,
     ) {
     }
 
@@ -45,15 +48,6 @@ final class WishItemProvider implements ProviderInterface
             return $items;
         }
 
-        $preferredCategoryIds = array_map(
-            fn ($category) => $category->getId(),
-            $user->getCategories()->toArray()
-        );
-        $preferredTagIds = array_map(
-            fn ($tag) => $tag->getId(),
-            $user->getTags()->toArray()
-        );
-
         foreach ($items as $item) {
             if (!$item instanceof WishItem) {
                 continue;
@@ -64,6 +58,17 @@ final class WishItemProvider implements ProviderInterface
                 $user
             );
             $item->setMatchPercentage($score);
+
+            if ($item->getPrice() && $item->getCurrency() && $user->getCountry()?->getCurrency() && $item->getCurrency()->getCode() !== $user->getCountry()->getCurrency()->getCode()) {
+                $itemCurrency = $item->getCurrency()->getCode() ?? $this->defaultBaseCurrency;
+                $converted = $this->currencyConverter->convert(
+                    $item->getPrice(),
+                    $itemCurrency,
+                    $user->getCountry()->getCurrency()->getCode(),
+                );
+
+                $item->setPriceInfoInUserCurrency(round($converted, 2).' '.$user->getCountry()->getCurrency()->getCode());
+            }
         }
 
         return $items;

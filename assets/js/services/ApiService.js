@@ -1,6 +1,10 @@
 import axios from 'axios'
 
 class ApiService {
+
+    //global variable to save last request params
+    lastFetchParams
+
     constructor(baseURL = '/api') {
 
         this.logoutTimer = null
@@ -62,7 +66,7 @@ class ApiService {
 
                             window.location.href = '/login'
                         }, 5000)
-                    }else if(status > 400){
+                    }else if(status >= 400){
                         window.$toast('Error!', this.defautErrorMassage ? this.defautErrorMassage : 'Something goes wrong, please try again later', 'error')
                     }
 
@@ -147,17 +151,20 @@ class ApiService {
 
     async search(query = '') {
         const params = query ? { name: query } : {}
+        this.lastFetchParams = params;
         const response = await this.get('/', { params })
         return response.data;
     }
 
     async fetch(params = {}, page = 1, itemsPerPage = 10) {
         const requestParams = { ...params, page, itemsPerPage }
+        this.lastFetchParams = requestParams;
         const response = await this.get('/', { params: requestParams })
         return response.data;
     }
 
     async fetchAll(params = {}) {
+        this.lastFetchParams = params;
         const response = await this.get('/', { params })
         return response.data;
     }
