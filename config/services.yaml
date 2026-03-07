@@ -57,6 +57,11 @@ services:
         arguments:
             $defaultBaseCurrency: '%currency_api.defaultCurrency%'
 
+    App\Integration\SoapIntegration\CountryApi\CountryCommInterface:
+        class: App\Integration\SoapIntegration\CountryApi\CountryComm
+        arguments:
+            $wsdl: 'http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL'
+            $retries: 3
 
 when@test:
     services:
@@ -78,3 +83,17 @@ when@test:
                 $repository: '@App\Repository\CurrencyRepository'
                 $em: '@doctrine.orm.entity_manager'
                 $logger: '@monolog.logger'
+
+        App\Integration\SoapIntegration\CountryApi\CountryCommInterface:
+            class: App\Integration\SoapIntegration\CountryApi\MockCountryComm
+            arguments:
+                $logger: '@monolog.logger'
+
+        App\Service\CountryUpdater:
+            public: true
+            arguments:
+                $countryInfoProvider: '@App\Integration\SoapIntegration\CountryApi\Provider\CountryInfoProvider'
+                $repository: '@App\Repository\CountryRepository'
+                $em: '@doctrine.orm.entity_manager'
+                $logger: '@monolog.logger'
+                $defaultBaseCurrency: '%currency_api.defaultCurrency%'

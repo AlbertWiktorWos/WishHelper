@@ -1,3 +1,6 @@
+## [07.03.2026]
+- Countries soap integration with command to run integration.
+- libxml2-dev enabled in php container.
 ## [06.03.2026]
 - Currencies integration with command to run integration
 # [ALPHA]

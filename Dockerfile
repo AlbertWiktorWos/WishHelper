@@ -4,13 +4,15 @@ RUN apt update && apt install -y \
     zlib1g-dev g++ git libicu-dev zip libzip-dev zip unzip curl \
     libpng-dev libjpeg-dev libfreetype6-dev \
     libxslt1-dev pkg-config \
-    && docker-php-ext-install intl opcache pdo pdo_mysql \
+    libxml2-dev \
+    && docker-php-ext-install intl opcache pdo pdo_mysql soap \
     && pecl install apcu \
     && docker-php-ext-enable apcu \
     && docker-php-ext-configure zip \
     && docker-php-ext-install zip \
     && rm -rf /var/lib/apt/lists/*
 # for wkhtmltopdf we install wkhtmltopdf libxrender1 libfontconfig1 libxext6 xfonts-base xfonts-75dpi \
+# for soap integration we install libxml2-dev
 
 # enable cache system to increase performance
 RUN docker-php-ext-enable opcache

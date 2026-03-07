@@ -9,7 +9,7 @@ use App\EventSubscriber\CategoryCacheInvalidationSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
-final class CachedCategoryCollectionProvider implements ProviderInterface
+final class AbstractCachedDictionaryCollectionProvider implements ProviderInterface
 {
     public function __construct(
         private EntityManagerInterface $em,
