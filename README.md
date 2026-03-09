@@ -52,6 +52,9 @@ We have to create new data source with mysql. Then in properties we added some c
 
 ## Integration
 At this moment, the Wish Helper app supports currency integration. To start the integration and update currencies, run the following command in the container:
+The integration works via queuing using messenger + RabbitMQ. 
+Additionally, you should check the configuration for cron, which runs integrations at specific intervals, while the worker container consuming messages.
+
 `php bin/console app:currency-integration USD,EUR,PLN`
 where currencies separated by commas are optional. The basis for calculations is USD.
 Another integration is fetching countries via SOAP. To start the integration and update countries, run the following command in the container:
