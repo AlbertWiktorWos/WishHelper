@@ -1,0 +1,52 @@
+FROM php:8.2-fpm
+# Install the PHP extensions Symfony depends on.
+RUN apt update && apt install -y \
+    zlib1g-dev g++ git libicu-dev zip libzip-dev zip unzip curl \
+    libpng-dev libjpeg-dev libfreetype6-dev \
+    libxslt1-dev pkg-config \
+    libxml2-dev \
+    librabbitmq-dev \
+    && docker-php-ext-install intl opcache pdo pdo_mysql soap \
+    && pecl install apcu \
+    && docker-php-ext-enable apcu \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install zip \
+    && rm -rf /var/lib/apt/lists/*
+# for wkhtmltopdf we install wkhtmltopdf libxrender1 libfontconfig1 libxext6 xfonts-base xfonts-75dpi \
+# for soap integration we install libxml2-dev
+# for rabbitmq we need librabbitmq-dev
+
+# enable cache system to increase performance
+RUN docker-php-ext-enable opcache
+
+# for image manipulation (thumbnails for example) (so we install libpng-dev libjpeg-dev libfreetype6-dev \)
+RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
+    && docker-php-ext-install gd xsl
+
+# https://matthewsetter.com/setup-step-debugging-php-xdebug3-docker/
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
+# amqp extension for RabbitMQ
+RUN pecl install amqp \
+    && docker-php-ext-enable amqp
+
+# we need phpredis for massanger
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+ \
+    # installing cron
+RUN apt-get update && apt-get install -y cron
+
+#Set the working directory of the container to /var/www/project
+WORKDIR /var/www/project
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Install the Symfony CLI
+RUN curl -sS https://get.symfony.com/cli/installer | bash
+# The second command RUN mv /root/.symfony/bin/symfony /usr/local/bin/symfony moves the symfony binary from the /root/.symfony/bin/ directory to the /usr/local/bin/ directory.
+# This makes the symfony command available globally within the container, so it can be called from any location.
+RUN mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
+
+

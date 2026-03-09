@@ -2,6 +2,8 @@
 
 namespace App\Integration\Command;
 
+use App\Message\UpdateCountriesMessage;
+use App\Message\UpdateCurrenciesMessage;
 use App\Service\CountryUpdater;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -9,6 +11,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsCommand(
     name: 'app:country-integration',
@@ -17,7 +20,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class CountryIntegrationCommand extends Command
 {
     public function __construct(
-        private CountryUpdater $countryUpdater,
+        private MessageBusInterface $bus,
     ) {
         parent::__construct();
     }
@@ -51,9 +54,11 @@ class CountryIntegrationCommand extends Command
         }
 
         try {
-            $this->countryUpdater->update($codes);
+            $this->bus->dispatch(
+                new UpdateCountriesMessage($codes)
+            );
 
-            $io->success('Countries successfully updated');
+            $io->success('Countries update job dispatched');
         } catch (\Throwable $e) {
             $io->error($e->getMessage());
 

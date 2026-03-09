@@ -1,0 +1,11 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+#TEST
+* * * * * root echo "cron works $(date)" >> /var/www/project/var/log/cron.log 2>&1
+
+# run currency integration every 1 day
+0 0 * * * root /usr/local/bin/php /var/www/project/bin/console app:currency-integration >> /var/www/project/var/log/cron.log 2>&1
+
+# run country integration every 1 minute
+* * * * * root /usr/local/bin/php /var/www/project/bin/console app:country-integration >> /var/www/project/var/log/cron.log 2>&1

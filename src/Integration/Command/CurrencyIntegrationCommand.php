@@ -2,6 +2,7 @@
 
 namespace App\Integration\Command;
 
+use App\Message\UpdateCurrenciesMessage;
 use App\Service\CurrencyUpdater;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -9,6 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsCommand(
     name: 'app:currency-integration',
@@ -17,7 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class CurrencyIntegrationCommand extends Command
 {
     public function __construct(
-        private CurrencyUpdater $currencyUpdater,
+        private MessageBusInterface $bus,
     ) {
         parent::__construct();
     }
@@ -51,9 +53,11 @@ class CurrencyIntegrationCommand extends Command
         }
 
         try {
-            $this->currencyUpdater->update($codes);
+            $this->bus->dispatch(
+                new UpdateCurrenciesMessage($codes)
+            );
 
-            $io->success('Currencies successfully updated');
+            $io->success('Currency update job dispatched');
         } catch (\Throwable $e) {
             $io->error($e->getMessage());
 

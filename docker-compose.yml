@@ -19,6 +19,7 @@ services:
     container_name: wh_php
     build:
       context: .
+      dockerfile: docker/Dockerfile
     ports:
       - '9000:9000'
     environment:
@@ -53,6 +54,53 @@ services:
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
+
+    #5672 – Messenger - RabbitMQ communication:
+    #15672 – panel (http://localhost:15672
+    #login: guest / guest)
+    #PHP host: rabbitmq (service name!)
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: wh_rabbitmq
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Web UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    healthcheck: # we add healthcheck to prevent running worker before rabbitmq fully works
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
+  worker:
+    container_name: wh_worker
+    build:
+      context: .
+      dockerfile: docker/cron/Dockerfile
+    command: php bin/console messenger:consume async -vv --time-limit=3600 --memory-limit=256M
+    volumes:
+      - ./:/var/www/project
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: always
+
+  cron:
+    container_name: wh_cron
+    build:
+      context: .
+      dockerfile: docker/cron/Dockerfile
+    environment:
+      MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN}
+    volumes:
+      - ./:/var/www/project
+      - ./docker/cron/cronjobs.cron:/etc/cron.d/cronjobs
+    command: sh -c "touch /var/www/project/var/log/cron.log && chmod 0644 /etc/cron.d/cronjobs && cron -f"
+    depends_on:
+      - rabbitmq
+      - database
 
 volumes:
   symfony_var_cache:

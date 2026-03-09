@@ -5,6 +5,7 @@ RUN apt update && apt install -y \
     libpng-dev libjpeg-dev libfreetype6-dev \
     libxslt1-dev pkg-config \
     libxml2-dev \
+    librabbitmq-dev \
     && docker-php-ext-install intl opcache pdo pdo_mysql soap \
     && pecl install apcu \
     && docker-php-ext-enable apcu \
@@ -13,6 +14,7 @@ RUN apt update && apt install -y \
     && rm -rf /var/lib/apt/lists/*
 # for wkhtmltopdf we install wkhtmltopdf libxrender1 libfontconfig1 libxext6 xfonts-base xfonts-75dpi \
 # for soap integration we install libxml2-dev
+# for rabbitmq we need librabbitmq-dev
 
 # enable cache system to increase performance
 RUN docker-php-ext-enable opcache
@@ -24,6 +26,14 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
 # https://matthewsetter.com/setup-step-debugging-php-xdebug3-docker/
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
+
+# amqp extension for RabbitMQ
+RUN pecl install amqp \
+    && docker-php-ext-enable amqp
+
+# we need phpredis for massanger
+RUN pecl install redis \
+    && docker-php-ext-enable redis
 
 # -------------------------
 # Install Node + npm + Yarn

@@ -1,3 +1,6 @@
+## [09.03.2026]
+- Cron and Worker containers added and configured
+- Configuring messenger for integration and sending emails
 ## [07.03.2026]
 - Currency conversion for wishes by user selected country currency
 - Load more action for search component
