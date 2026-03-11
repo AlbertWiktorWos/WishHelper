@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Item;
 
 use App\Entity\Country;
-use App\Entity\Currency;
 use App\Integration\SoapIntegration\CountryApi\Provider\CountryInfoProvider;
 use App\Repository\CountryRepository;
 use App\Repository\CurrencyRepository;

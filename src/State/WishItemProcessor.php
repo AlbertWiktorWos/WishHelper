@@ -8,7 +8,7 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Entity\User;
 use App\Entity\WishItem;
 use App\Event\WishItemSharedEvent;
-use App\Service\TagService;
+use App\Service\Item\TagService;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

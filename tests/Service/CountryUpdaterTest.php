@@ -4,7 +4,7 @@ namespace App\Tests\Service;
 
 use App\Factory\CountryFactory;
 use App\Factory\CurrencyFactory;
-use App\Service\CountryUpdater;
+use App\Service\Item\CountryUpdater;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;

@@ -5,7 +5,7 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Repository\UserRepository;
-use App\Service\FileHelper;
+use App\Service\Infrastructure\FileHelper;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class UserMeProvider implements ProviderInterface

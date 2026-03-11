@@ -3,7 +3,6 @@
 namespace App\Integration\Command;
 
 use App\Message\UpdateCurrenciesMessage;
-use App\Service\CurrencyUpdater;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

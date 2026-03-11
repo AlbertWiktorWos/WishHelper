@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
-use App\Dto\RegisterUserDto;
+use App\Dto\Request\RegisterUser;
 use App\Entity\Country;
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Service\Mailer;
+use App\Service\Infrastructure\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -82,7 +82,7 @@ class AuthController extends AbstractController
         }
 
         $json = json_encode($request->request->all());
-        $registerUserDto = $serializer->deserialize($json, RegisterUserDto::class, 'json');
+        $registerUserDto = $serializer->deserialize($json, RegisterUser::class, 'json');
         $errors = $validator->validate($registerUserDto);
         $errorsResult = [];
         if (count($errors) > 0) {

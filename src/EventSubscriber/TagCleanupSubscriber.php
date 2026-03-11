@@ -4,7 +4,7 @@ namespace App\EventSubscriber;
 
 use App\Entity\User;
 use App\Entity\WishItem;
-use App\Service\TagService;
+use App\Service\Item\TagService;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\PersistentCollection;

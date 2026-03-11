@@ -1,3 +1,6 @@
+## [11.03.2026]
+-  Reorganization of services and DTOs
+-  AI API assisted wish factory service
 ## [09.03.2026]
 - Cron and Worker containers added and configured
 - Configuring messenger for integration and sending emails

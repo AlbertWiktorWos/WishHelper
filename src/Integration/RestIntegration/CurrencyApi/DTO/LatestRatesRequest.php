@@ -2,9 +2,9 @@
 
 namespace App\Integration\RestIntegration\CurrencyApi\DTO;
 
-use App\Integration\RestIntegration\ApiRequestInterface;
+use App\Integration\RestIntegration\ApiGetRequestInterface;
 
-class LatestRatesRequest implements ApiRequestInterface
+class LatestRatesRequest implements ApiGetRequestInterface
 {
     public function __construct(
         public readonly string $baseCurrency,

@@ -10,7 +10,7 @@ use App\Integration\RestIntegration\CurrencyApi\DTO\LatestRatesResponse;
 use App\Integration\RestIntegration\CurrencyApi\Provider\CurrenciesInfoProvider;
 use App\Integration\RestIntegration\CurrencyApi\Provider\CurrencyRatesProvider;
 use App\Repository\CurrencyRepository;
-use App\Service\CurrencyUpdater;
+use App\Service\Item\CurrencyUpdater;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

@@ -2,7 +2,7 @@
 
 namespace App\Integration\RestIntegration;
 
-interface ApiRequestInterface
+interface ApiGetRequestInterface
 {
     public function toQuery(): array;
 }

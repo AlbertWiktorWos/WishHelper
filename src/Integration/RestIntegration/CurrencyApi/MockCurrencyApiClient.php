@@ -2,7 +2,7 @@
 
 namespace App\Integration\RestIntegration\CurrencyApi;
 
-use App\Integration\RestIntegration\ApiRequestInterface;
+use App\Integration\RestIntegration\ApiGetRequestInterface;
 use App\Integration\RestIntegration\CurrencyApi\Exception\CurrencyApiException;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -15,7 +15,7 @@ class MockCurrencyApiClient implements CurrencyApiClientInterface
     ) {
     }
 
-    public function getRequest(ResourcesNames $resourceName, ApiRequestInterface $request): ResponseInterface
+    public function getRequest(ResourcesNames $resourceName, ApiGetRequestInterface $request): ResponseInterface
     {
         $mockHttpClient = new MockHttpClient();
 

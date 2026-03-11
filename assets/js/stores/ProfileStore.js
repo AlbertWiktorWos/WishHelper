@@ -6,6 +6,9 @@ import ProfileService from '@js/services/ProfileService'
  * @property {number|string} id
  * @property {null|string} nickName
  * @property {string} email
+ * @property {null|Country} country
+ * @property {null|[Category]} categories
+ * @property {null|[]} tags
  * @property {null|string} maxPrice
  */
 

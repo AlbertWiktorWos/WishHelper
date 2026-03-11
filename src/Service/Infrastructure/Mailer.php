@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Infrastructure;
 
 use App\Entity\User;
 use App\Entity\WishItemRecommendation;

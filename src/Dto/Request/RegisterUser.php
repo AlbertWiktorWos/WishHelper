@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Dto;
+namespace App\Dto\Request;
 
 use App\Validator\IsValidCountry;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class RegisterUserDto
+class RegisterUser
 {
     #[Assert\NotBlank(message: 'Email cannot be empty')]
     #[Assert\Email(message: 'Invalid email address')]

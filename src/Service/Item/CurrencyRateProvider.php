@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Item;
 
 use App\Repository\CurrencyRepository;
 use Symfony\Contracts\Cache\CacheInterface;

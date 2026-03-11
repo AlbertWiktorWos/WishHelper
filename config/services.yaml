@@ -8,6 +8,9 @@ parameters:
     currency_api.url: 'https://api.freecurrencyapi.com/v1'
     currency_api.key: '%env(CURRENCY_API_KEY)%'
     currency_api.defaultCurrency: '%env(CURRENCY_API_DEFAULT_CURRENCY)%'
+    ai_api_key: '%env(AI_API_KEY)%'
+    ai_base_url: '%env(AI_BASE_URL)%'
+    ai_model_code: '%env(AI_MODEL_CODE)%'
 
 services:
     # default configuration for services in *this* file
@@ -34,11 +37,11 @@ services:
 
     App\EventSubscriber\TagCleanupSubscriber:
         arguments:
-            $tagService: '@App\Service\TagService'
+            $tagService: '@App\Service\Item\TagService'
         tags:
             - { name: doctrine.event_subscriber }
 
-    App\Service\FileHelper:
+    App\Service\Infrastructure\FileHelper:
         arguments:
             $publicStorage: '@public.storage'
             $publicBaseUrl: '%public_base_url%'
@@ -68,6 +71,16 @@ services:
         arguments:
             $defaultBaseCurrency: '%currency_api.defaultCurrency%'
 
+    App\Integration\RestIntegration\OpenRouter\OpenRouterClientInterface:
+        class: App\Integration\RestIntegration\OpenRouter\OpenRouterClient
+        arguments:
+            $apiKey: '%ai_api_key%'
+            $baseUrl: '%ai_base_url%'
+
+    App\Integration\RestIntegration\OpenRouter\Provider\ChatProvider:
+        arguments:
+            $model: '%ai_model_code%'
+
 when@test:
     services:
         # we disable CSRF checking during tests
@@ -80,7 +93,7 @@ when@test:
             arguments:
                 $baseUrl: 'test'
 
-        App\Service\CurrencyUpdater:
+        App\Service\Item\CurrencyUpdater:
             public: true
             arguments:
                 $currencyRatesProvider: '@App\Integration\RestIntegration\CurrencyApi\Provider\CurrencyRatesProvider'
@@ -95,7 +108,7 @@ when@test:
             arguments:
                 $logger: '@monolog.logger'
 
-        App\Service\CountryUpdater:
+        App\Service\Item\CountryUpdater:
             public: true
             arguments:
                 $countryInfoProvider: '@App\Integration\SoapIntegration\CountryApi\Provider\CountryInfoProvider'
@@ -105,3 +118,8 @@ when@test:
                 $logger: '@monolog.logger'
                 $cache: '@cache.app'
                 $defaultBaseCurrency: '%currency_api.defaultCurrency%'
+
+        App\Integration\RestIntegration\OpenRouter\OpenRouterClientInterface:
+            class: App\Integration\RestIntegration\OpenRouter\MockOpenRouterClient
+            arguments:
+                $baseUrl: '%ai_base_url%'

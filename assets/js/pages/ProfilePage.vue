@@ -135,6 +135,10 @@
           </div>
         </div>
 
+        <AIWishProposition
+            @copy="handleCopy(recommendation)"
+        />
+
         <!-- Notifications -->
         <div class="card p-3 mb-4">
           <div class="d-flex justify-content-between align-items-center">
@@ -205,6 +209,7 @@ import WishItemCard from "@js/components/wishitem/WishItemCard.vue";
 import WishItemService from "@js/services/WishItemService";
 import Loader from "@js/components/Loader.vue";
 import ApiService from "@js/services/ApiService";
+import AIWishProposition from "@js/components/profile/AIWishProposition.vue";
 
 const store = useProfileStore();
 const categoriesStore = useCategoryStore();

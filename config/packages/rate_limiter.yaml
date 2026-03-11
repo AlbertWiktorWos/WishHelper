@@ -18,3 +18,9 @@ framework:
       limit: 10
       rate: { interval: '1 minute', amount: 10 }
       cache_pool: 'cache.limiter'
+
+    ai:
+      policy: 'token_bucket' # user can make 2 requests every 1 minute (it's accumulate to max 10)
+      limit: 2
+      rate: { interval: '1 minute', amount: 10 }
+      cache_pool: 'cache.limiter'

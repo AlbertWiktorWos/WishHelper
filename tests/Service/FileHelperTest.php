@@ -3,7 +3,7 @@
 namespace App\Tests\Service;
 
 use App\Entity\User;
-use App\Service\FileHelper;
+use App\Service\Infrastructure\FileHelper;
 use League\Flysystem\FilesystemOperator;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;

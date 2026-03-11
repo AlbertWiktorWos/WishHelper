@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Dto;
+namespace App\Dto\Request;
 
-use App\Service\FileHelper;
+use App\Service\Infrastructure\FileHelper;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class AvatarUploadDTO
+class AvatarUpload
 {
     #[Assert\NotNull(message: 'Avatar file is required')]
     #[Assert\File(

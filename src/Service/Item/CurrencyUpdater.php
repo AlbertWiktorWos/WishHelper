@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Item;
 
 use App\Entity\Currency;
 use App\Integration\RestIntegration\CurrencyApi\DTO\CurrenciesResponse;

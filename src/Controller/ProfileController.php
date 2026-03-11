@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Dto\AvatarUploadDTO;
-use App\Service\FileHelper;
+use App\Dto\Request\AvatarUpload;
+use App\Service\Infrastructure\FileHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -41,7 +41,7 @@ final class ProfileController extends AbstractController
             throw new TooManyRequestsHttpException();
         }
 
-        $dto = new AvatarUploadDTO();
+        $dto = new AvatarUpload();
         $dto->file = $request->files->get('file');
 
         $violations = $validator->validate($dto);

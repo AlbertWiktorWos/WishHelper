@@ -5,8 +5,8 @@ namespace App\EventListener;
 use App\Entity\User;
 use App\Entity\WishItemRecommendation;
 use App\Event\WishItemSharedEvent;
-use App\Service\Mailer;
-use App\Service\WishMatchCalculator;
+use App\Service\Infrastructure\Mailer;
+use App\Service\Item\WishMatchCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 

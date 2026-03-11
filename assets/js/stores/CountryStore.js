@@ -5,6 +5,8 @@ import CountryService from '@js/services/CountryService'
  * @typedef {Object} Country
  * @property {number|string} id
  * @property {string} label
+ * @property {string} name
+ * @property {string} flag
  */
 
 export const useCountryStore = defineStore('country', {
