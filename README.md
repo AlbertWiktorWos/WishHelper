@@ -6,6 +6,15 @@ The application includes a wish search feature with a match algorithm that score
 ## Alpha
 The Alpha version focuses on building a stable technical foundation for future development. At this stage, the application implements a secure authentication system, a structured domain model, and a fully functional API layer prepared for wishlist management and matching logic. This phase prioritizes architecture, security, and extensibility over advanced integrations.
 
+## Beta
+The Beta stage transitions the app from a simple CRUD to a scalable, event-driven architecture.
+* AI Integration: Integration with an AI API for creating wish recommendation based on user preferences.
+* Asynchronous Processing (Messenger): Heavy tasks—such as AI processing and email dispatching—are offloaded to background - messenger worker via Symfony Messenger to ensure a non-blocking UI and high reliability.
+* Real-time Communication (Mercure): Integration of the Mercure protocol to provide instant frontend updates (e.g., notification when an AI task is finished or when new recommendation from another user appear) without page refreshes.
+* Data Integration: Automated synchronization of global data using SOAP (Country information) and REST (Currency rates), orchestrated by Cron jobs.
+* Performance Optimization: Implementation of Redis caching for frequently accessed, slow-changing data (Countries, Currencies, AI same final prompts) to minimize external requests and latency.
+* UX & Logic: Multi-currency support, improved frontend responsiveness.
+
 ## Preview
 ![p_1.jpg](docs/preview/p_1.jpg)
 ![p_2.jpg](docs/preview/p_2.jpg)
@@ -84,3 +93,6 @@ we create docker/php directory with Dockerfile with configuration where we:
 * to run php-cs-fixer: `composer style-fix src --dry-run` (remove --dry-run to fix issues, also it is possible to add path to check/fix only specific directory)
 * if a memory issue with phpstan occurs you can increase memory limit by changing --memory-limit in composer.json
 * phpstan level is set to 6
+### Tests
+* to run test use command: `php bin/phpunit tests`.
+* to tests we use also Zenstruck for better browser emulation and reseting database due to that, we gave a db user privilege to manage the database. Run mysql -uroot -p then paste:

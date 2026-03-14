@@ -6,61 +6,53 @@
     <div v-else class="row g-4">
 
       <!-- LEFT COLUMN -->
-      <div class="col-md-3">
+      <div class="col-sm-12 col-md-4 col-xl-3">
 
-        <!-- Avatar + nickname -->
-        <h3>{{ store.data.nickName ?? '-' }}</h3>
-        <div class="d-flex align-items-center mb-4">
-          <div class="position-relative">
-            <img
-                :src="store.data.avatarUrl ?? require('@images/avatar.png')"
-                class="rounded-circle"
-                style="max-width: 150px; max-height: 150px; object-fit: cover;"
-            />
-            <button
-                class="btn btn-sm btn-secondary position-absolute bottom-0 end-0"
-                @click="uploadAvatar"
-                title="Change avatar"
-            >
-              <i class="bi bi-camera"></i>
-            </button>
+        <div class="row">
+          <div class="col-sm-6 col-md-12">
+            <!-- Avatar + nickname -->
+            <h3>{{ store.data.nickName ?? '-' }}</h3>
+            <div class="d-flex align-items-center mb-4">
+              <div class="position-relative">
+                <img
+                    :src="store.data.avatarUrl ?? require('@images/avatar.png')"
+                    class="rounded-circle"
+                    style="max-width: 200px; max-height: 200px; object-fit: cover;"
+                />
+                <button
+                    class="btn btn-sm btn-secondary position-absolute bottom-0 end-0"
+                    @click="uploadAvatar"
+                    title="Change avatar"
+                >
+                  <i class="bi bi-camera"></i>
+                </button>
+              </div>
+            </div>
+            <div class="ms-3">
+              <p class="text-muted">Joined: {{ formattedDate(store.data.createdAt) ?? '-' }}</p>
+              <p class="text-muted w-100 text-break-all">{{ store.data.email ?? '-' }}</p>
+            </div>
+          </div>
+
+          <!-- User data -->
+          <div class="col-sm-6 col-md-12">
+            <div class="card p-3 mb-4">
+              <div class="text-end">
+                <button class="btn btn-outline-primary btn-sm w-100 mb-3" @click="editMode = !editMode">
+                  {{ editMode ? 'Cancel' : 'Edit' }}
+                </button>
+              </div>
+
+              <ProfileForm
+                  :user="store.data"
+                  :saving="store.saving"
+                  :error="store.error"
+                  @save="handleSave"
+                  :readonly="!editMode"
+              />
+            </div>
           </div>
         </div>
-        <div class="ms-3">
-          <p class="text-muted">Joined: {{ formattedDate(store.data.createdAt) ?? '-' }}</p>
-          <p class="text-muted w-100">{{ store.data.email ?? '-' }}</p>
-        </div>
-
-        <!-- User data -->
-        <div class="card p-3 mb-4">
-          <div class="text-end">
-            <button class="btn btn-outline-primary btn-sm w-50 float-right" @click="editMode = !editMode">
-              {{ editMode ? 'Cancel' : 'Edit' }}
-            </button>
-          </div>
-
-
-          <div v-if="!editMode">
-            <p><strong>Nick:</strong> {{ store.data.nickName ?? '-' }}</p>
-            <p>
-              <strong>Country:</strong> {{ store.data.country?.name ?? '-' }}
-              <img v-if="store.data.country?.flag" :src="store.data.country.flag" alt="" class="me-2" style="width: 20px; height: 14px; object-fit: cover;">
-            </p>
-            <p>
-              <strong>Max price:</strong> {{ store.data.maxPrice ?? '-' }}
-            </p>
-          </div>
-          <div v-if="editMode">
-            <ProfileForm
-                :user="store.data"
-                :saving="store.saving"
-                :error="store.error"
-                @save="handleSave"
-            />
-          </div>
-        </div>
-
-
 
         <!-- Categories -->
         <div class="card p-3 mb-4">
@@ -98,10 +90,10 @@
       </div>
 
       <!-- RIGHT COLUMN -->
-      <div class="col-md-9">
+      <div class="col-sm-12 col-md-8 col-xl-9">
 
         <!-- Followed tags -->
-        <div class="card p-3 mb-4">
+        <div class="card p-4 shadow-sm mb-4">
 
           <div class="position-absolute top-0 end-0 m-3 text-muted">
             <Tooltip text="The tags you follow will affect the wishes notifications you receive." position="top">
@@ -110,7 +102,10 @@
             </Tooltip>
           </div>
 
-          <strong>Observed tags</strong>
+          <div class="d-flex align-items-center mb-3">
+            <i class="bi bi-flag me-2 fs-4 text-primary"></i>
+            <h5 class="mb-0">Observed tags</h5>
+          </div>
 
           <TagInput
               v-model="tags"
@@ -121,18 +116,22 @@
 
         </div>
         <!-- Changing Notifications -->
-        <div class="card p-3 mb-4">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <strong>Email notifications</strong>
-              <p class="mb-0 text-muted">Receive updates about new content and recommendations.</p>
+        <div class="card p-4 shadow-sm mb-4">
+          <div class=" d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-envelope-at me-2 fs-4 text-primary"></i>
+              <h5 class="mb-0">Ask AI for Gift Ideas</h5>
             </div>
 
             <BaseSwitch
                 :model-value="store.data.notify ?? false"
                 @update:modelValue="value => toggleNotifications(value)"
             />
+
           </div>
+
+          <p class="mb-0 text-muted">Receive updates about new content and recommendations.</p>
+
         </div>
 
         <AIWishProposition
@@ -140,50 +139,62 @@
         />
 
         <!-- Notifications -->
-        <div class="card p-3 mb-4">
+        <div class="card p-4 shadow-sm mb-4">
           <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <strong>These wishes may interest you</strong>
+            <div class="d-flex align-items-center mb-3">
+              <i class="bi bi-bell me-2 fs-4 text-primary"></i>
+              <h5 class="mb-0">These wishes may interest you</h5>
             </div>
           </div>
-          <div v-if="wishItemRecommendationStore.items.length===0">
-            <p class="mb-0 text-muted"> There is no recommendation yet! </p>
-          </div>
+          <Loader v-if="wishItemRecommendationStore.loading" text="Loading recommendations..." />
           <div v-else>
-            <div v-for="recommendation in wishItemRecommendationStore.items" :key="recommendation.id">
+            <div v-if="wishItemRecommendationStore.items.length===0">
+              <p class="mb-0 text-muted"> There is no recommendation yet! </p>
+            </div>
+            <div v-else>
+              <div v-for="recommendation in wishItemRecommendationStore.items" :key="recommendation.id">
 
-              <div class="alert alert-success" role="alert">
-                <div class="d-flex justify-content-between align-items-center">
-                  <h5 class="alert-heading">New Wish Recommendation!</h5>
-                  <div>
-                    <span class="text-muted"> {{ getFormattedDate(recommendation.createdAt) }} </span>
-                    <button type="button" @click="handleNotificationSeen(recommendation)" class="btn btn-lg bi bi-check2-circle" data-bs-dismiss="alert" aria-label="Seen"></button>
+                <div class="alert alert-success" role="alert">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h5 v-if="recommendation.type==='ai_recommendation'" class="alert-heading mb-0">Your AI-driven recommendation!</h5>
+                    <h5 v-if="recommendation.type==='shared_wish'" class="alert-heading mb-0">New Wish Recommendation!</h5>
+
+                    <div class="d-flex align-items-center text-nowrap">
+                      <span class="text-muted small me-2"> {{ getFormattedDate(recommendation.createdAt) }} </span>
+                      <button
+                          type="button"
+                          @click="handleNotificationSeen(recommendation)"
+                          class="btn btn-link text-success p-0 fs-3 bi bi-check2-circle"
+                          data-bs-dismiss="alert"
+                          aria-label="Seen"
+                      ></button>
+                    </div>
                   </div>
-                </div>
-                <p>Title of the wish you may be interested: {{ recommendation.wishItemTitle }}</p>
+                  <span>Title of the wish you may be interested: </span><strong>{{ recommendation.wishItemTitle }}</strong>
 
-                <div v-if="recommendation.wishItem">
+                  <div v-if="recommendation.wishItem" class="mt-2">
 
-                  <a
-                      class="btn btn-primary"
-                      data-bs-toggle="collapse"
-                      :href="'#collapseDetails-' + recommendation.id"
-                      role="button"
-                      aria-expanded="false"
-                      :aria-controls="'collapseDetails-' + recommendation.id"
-                  >
-                    Click for details!
-                  </a>
+                    <a
+                        class="btn btn-primary"
+                        data-bs-toggle="collapse"
+                        :href="'#collapseDetails-' + recommendation.id"
+                        role="button"
+                        aria-expanded="false"
+                        :aria-controls="'collapseDetails-' + recommendation.id"
+                    >
+                      Click for details!
+                    </a>
 
-                  <div class="collapse" :id="'collapseDetails-' + recommendation.id">
-                    <WishItemCard
-                        :key="recommendation.wishItem['@id']"
-                        :item="recommendation.wishItem"
-                        :mode="readonly"
-                        @copy="handleCopy(recommendation)"
-                    />
+                    <div class="collapse mt-2" :id="'collapseDetails-' + recommendation.id">
+                      <WishItemCard
+                          :key="recommendation.wishItem['@id']"
+                          :item="recommendation.wishItem"
+                          :mode="readonly"
+                          @copy="handleCopy(recommendation)"
+                      />
+                    </div>
+
                   </div>
-
                 </div>
               </div>
             </div>
@@ -336,9 +347,9 @@ const uploadAvatar = () => {
     const formData = new FormData()
     formData.append('file', file)
 
-      const response = await (new ApiService()).upload('/profile/avatar', formData)
-      store.data.avatarUrl = response.data.avatarUrl;
-      window.$toast('Success!', 'Avatar was updated successfully', 'success')
+    const response = await (new ApiService()).upload('/profile/avatar', formData)
+    store.data.avatarUrl = response.data.avatarUrl;
+    window.$toast('Success!', 'Avatar was updated successfully', 'success')
 
   }
 
@@ -364,5 +375,9 @@ const updateCategories = async () => {
 </script>
 
 <style lang="scss" scoped>
-
+.text-break-all {
+  overflow-wrap: break-word; /* Nowoczesny standard */
+  word-break: break-all;    /* Agresywne łamanie (dobre dla bardzo długich maili/linków) */
+  hyphens: auto;            /* Opcjonalnie dodaje myślniki */
+}
 </style>

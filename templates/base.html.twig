@@ -24,7 +24,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
     <div class="container">
         <a class="navbar-brand fw-semibold" href="{{ path('app_landing') }}">
-            <img src="{{ asset('build/images/logo.png') }}" alt="🎁"> WishHelper
+            <img src="{{ asset('build/images/logo.png') }}" style="max-width: 100px" alt="🎁"> WishHelper
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -95,6 +95,22 @@
     {{ encore_entry_script_tags('app') }}
     <script>
         window.CSRF_TOKEN = "{{ csrf_token('global') }}";
+        window.USER_ID = {{ app.user ? app.user.id : 'null' }}
+
+        {% if app.user %}
+        // Mercure token for the user
+        window.MERCURE_TOKEN = "{{ mercure_token('user/' ~ app.user.id ~ '/wish-item-recommendations') }}";
+        window.MERCURE_URL = "{{ mercure_hub_url }}";
+        // App routes to redirections
+        window.APP_ROUTES = {
+            'profile': "{{ path('app_profile') }}",
+            'wishItemMine': "{{ path('app_wish_item_mine') }}",
+            'wishItemSearch': "{{ path('app_wish_item_search') }}"
+        };
+        {% else %}
+        window.MERCURE_TOKEN = null;
+        {% endif %}
+
     </script>
 {% endblock %}
 </body>

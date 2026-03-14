@@ -24,6 +24,9 @@ class WishItemView
     #[Groups(['wish:read'])]
     public ?CategoryView $category = null;
 
+    /**
+     * @var array <int, TagView>
+     */
     #[Groups(['wish:read'])]
     public array $tags = [];
 

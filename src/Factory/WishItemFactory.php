@@ -12,8 +12,6 @@ final class WishItemFactory extends PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
      */
     public function __construct()
     {
@@ -26,8 +24,6 @@ final class WishItemFactory extends PersistentProxyObjectFactory
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
-     * @todo add your default values here
      */
     protected function defaults(): array|callable
     {
@@ -36,8 +32,7 @@ final class WishItemFactory extends PersistentProxyObjectFactory
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'currency' => CurrencyFactory::new(),
             'owner' => UserFactory::new(),
-            'price' => self::faker()->randomFloat(2, 0.01, 10000),
-            'shared' => self::faker()->boolean(),
+            'price' => self::faker()->biasedNumberBetween(10, 5000, function ($x) { return $x * $x; }),            'shared' => self::faker()->boolean(),
             'title' => self::faker()->words(3, true),
             'description' => self::faker()->realText(255),
             'tags' => [TagFactory::new()],

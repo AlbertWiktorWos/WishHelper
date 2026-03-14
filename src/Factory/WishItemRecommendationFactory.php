@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\WishItemRecommendation;
+use App\Enum\RecommendationType;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -12,8 +13,6 @@ final class WishItemRecommendationFactory extends PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
      */
     public function __construct()
     {
@@ -38,6 +37,7 @@ final class WishItemRecommendationFactory extends PersistentProxyObjectFactory
             'wishItemTitle' => self::faker()->words(3, true),
             'score' => self::faker()->numberBetween(0, 100),
             'isSeen' => self::faker()->boolean,
+            'type' => RecommendationType::SHARED_WISH,
         ];
     }
 

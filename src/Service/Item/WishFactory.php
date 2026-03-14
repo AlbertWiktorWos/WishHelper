@@ -14,7 +14,6 @@ use App\Repository\CategoryRepository;
 use App\Repository\CurrencyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -22,7 +21,6 @@ use Symfony\Contracts\Cache\ItemInterface;
 class WishFactory
 {
     public function __construct(
-        private Security $security,
         private ChatProvider $chatProvider,
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
@@ -35,11 +33,8 @@ class WishFactory
     ) {
     }
 
-    public function createByPrompt(string $prompt, bool $persist = false): ?WishItem
+    public function createByPrompt(User $user, string $prompt, bool $persist = false): ?WishItem
     {
-        $user = $this->security->getUser();
-        assert($user instanceof User);
-
         $finalPrompt = $this->buildPrompt($prompt, $user);
 
         $cacheKey = 'ai_wish_'.md5($finalPrompt);
@@ -123,6 +118,7 @@ class WishFactory
             'price' => 'approximate price of the product',
             'currency' => 'currency iso code of the price of the product',
             'category' => 'one of these categories: '.$categoriesText,
+            'tags' => 'you may provide one or few tags separated by comma',
         ];
 
         $text .= sprintf(
@@ -146,6 +142,15 @@ class WishFactory
 
         $category = $this->categoryRepository->findOneBy(['name' => ucfirst($data->category)]);
         $wish->setCategory($category);
+
+        if ($data->tags) {
+            foreach (explode(',', $data->tags) as $tag) {
+                $tag = trim($tag);
+                $tagEntity = new Tag();
+                $tagEntity->setName($tag);
+                $wish->addTag($tagEntity);
+            }
+        }
 
         $currency = $this->currencyRepository->findOneBy(['code' => $data->currency ?? $this->defaultBaseCurrency]);
         $wish->setCurrency($currency ?? null);

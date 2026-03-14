@@ -4,11 +4,14 @@ namespace App\EventListener;
 
 use App\Entity\User;
 use App\Entity\WishItemRecommendation;
+use App\Enum\RecommendationType;
 use App\Event\WishItemSharedEvent;
 use App\Service\Infrastructure\Mailer;
 use App\Service\Item\WishMatchCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 
 class WishItemSharedListener implements EventSubscriberInterface
 {
@@ -16,6 +19,7 @@ class WishItemSharedListener implements EventSubscriberInterface
         private EntityManagerInterface $em,
         private WishMatchCalculator $calculator,
         private Mailer $mailer,
+        private HubInterface $hub,
     ) {
     }
 
@@ -44,6 +48,7 @@ class WishItemSharedListener implements EventSubscriberInterface
         $batchSize = 50;
         $i = 0;
 
+        $mercureUpdates = [];
         // iterating through users without loading all of them into memory
         foreach ($qb->getQuery()->toIterable() as $user) {
             if (!$user instanceof User) {
@@ -73,19 +78,34 @@ class WishItemSharedListener implements EventSubscriberInterface
             $rec->setWishItem($wishItem)
                 ->setUser($user)
                 ->setScore($score)
+                ->setType(RecommendationType::SHARED_WISH)
                 ->setWishItemTitle($wishItem->getTitle());
 
             $this->em->persist($rec);
 
             if ($user->isNotify()) {
                 $this->mailer->sendEmailWishNotificationMessage($user, $rec);
+                $rec->setNotifiedAt(new \DateTimeImmutable());
             }
+
+            // we publish a new mercure event
+            $mercureUpdates[] = new Update(
+                'user/'.$user->getId().'/wish-item-recommendations', // Dodaj "wish-item-"
+                json_encode([
+                    'id' => $rec->getId(),
+                    'type' => RecommendationType::SHARED_WISH,
+                    'title' => $rec->getWishItemTitle(), // Dodaj title, bo JS go oczekuje!
+                ])
+            );
 
             // flush after each batchSize
             if ((++$i % $batchSize) === 0) {
                 $this->em->flush();
                 $this->em->clear(); // we free up memory
             }
+        }
+        foreach ($mercureUpdates as $mercureUpdate) {
+            $this->hub->publish($mercureUpdate);
         }
 
         $this->em->flush();

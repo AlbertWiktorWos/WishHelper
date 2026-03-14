@@ -5,6 +5,7 @@ namespace App\Service\Mapper;
 use ApiPlatform\Metadata\IriConverterInterface;
 use App\Dto\Response\CategoryView;
 use App\Dto\Response\CurrencyView;
+use App\Dto\Response\TagView;
 use App\Dto\Response\WishItemView;
 use App\Entity\WishItem;
 
@@ -31,6 +32,15 @@ class WishItemViewMapper
             $currency->code = $wish->getCurrency()->getCode();
             $currency->name = $wish->getCurrency()->getName();
             $dto->currency = $currency;
+        }
+
+        if (!$wish->getTags()->isEmpty()) {
+            $dto->tags = [];
+            foreach ($wish->getTags() as $tag) {
+                $tagView = new TagView();
+                $tagView->name = $tag->getName();
+                $dto->tags[] = $tagView;
+            }
         }
 
         if ($wish->getCategory()) {

@@ -81,6 +81,15 @@ services:
         arguments:
             $model: '%ai_model_code%'
 
+    App\Service\Infrastructure\MercureTokenGenerator:
+        arguments:
+            $mercureSecret: '%env(MERCURE_JWT_SECRET)%'
+
+    App\Service\Item\WishFactory:
+        arguments:
+            $chatProvider: '@App\Integration\RestIntegration\OpenRouter\Provider\ChatProvider'
+            $defaultBaseCurrency: '%currency_api.defaultCurrency%'
+
 when@test:
     services:
         # we disable CSRF checking during tests

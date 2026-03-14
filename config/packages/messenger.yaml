@@ -18,6 +18,7 @@ framework:
            # integrations
             App\Message\UpdateCurrenciesMessage: async
             App\Message\UpdateCountriesMessage: async
+            App\Message\CreateWishByPromptMessage: async
             # we use SendEmailMessage class @see SendEmailMessage
             Symfony\Component\Mailer\Messenger\SendEmailMessage:  async
 

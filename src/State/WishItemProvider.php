@@ -39,10 +39,6 @@ final class WishItemProvider implements ProviderInterface
             $context
         );
 
-        if (!$request?->query->getBoolean('not_owner')) {
-            return $items;
-        }
-
         $user = $this->security->getUser();
         if (!$user instanceof User) {
             return $items;
@@ -52,12 +48,6 @@ final class WishItemProvider implements ProviderInterface
             if (!$item instanceof WishItem) {
                 continue;
             }
-
-            $score = $this->calculator->getMatchScore(
-                $item,
-                $user
-            );
-            $item->setMatchPercentage($score);
 
             if ($item->getPrice() && $item->getCurrency() && $user->getCountry()?->getCurrency() && $item->getCurrency()->getCode() !== $user->getCountry()->getCurrency()->getCode()) {
                 $itemCurrency = $item->getCurrency()->getCode() ?? $this->defaultBaseCurrency;
@@ -69,6 +59,16 @@ final class WishItemProvider implements ProviderInterface
 
                 $item->setPriceInfoInUserCurrency(round($converted, 2).' '.$user->getCountry()->getCurrency()->getCode());
             }
+
+            if (!$request?->query->getBoolean('not_owner')) {
+                continue;
+            }
+
+            $score = $this->calculator->getMatchScore(
+                $item,
+                $user
+            );
+            $item->setMatchPercentage($score);
         }
 
         return $items;

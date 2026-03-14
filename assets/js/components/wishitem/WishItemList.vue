@@ -129,7 +129,7 @@
               />
               <span class="text-muted"> {{item.shared ? 'Shared' : 'Private'}} </span>
             </div>
-            <div v-if="mode!=='owner' && item.matchPercentage >= 50" class="position-absolute top-0 end-0 m-2 text-end">
+            <div v-if="mode!=='owner' && item.matchPercentage >= 50" class="position-absolute top-0 end-0 m-2 text-end p-1">
               <span class="text-muted"> {{'Match: ' + item.matchPercentage + '%!'}} </span>
               <i class="bi bi-award-fill"></i>
             </div>
@@ -141,9 +141,9 @@
         </div>
 
         <!-- Pagination -->
-        <div class="d-flex justify-content-center align-items-center mt-4">
+        <div class="d-flex justify-content-center align-items-center m-4">
           <button
-              class="btn btn-outline-secondary btn-sm"
+              class="btn btn-outline-secondary btn"
               :disabled="currentPage === 1"
               @click="prevPage"
           >
@@ -155,7 +155,7 @@
         </span>
 
           <button
-              class="btn btn-outline-secondary btn-sm"
+              class="btn btn-outline-secondary btn"
               :disabled="currentPage === totalPages"
               @click="nextPage"
           >

@@ -92,4 +92,19 @@ class FileHelper
     {
         return rtrim($this->publicBaseUrl, '/').'/'.$directory.'/'.$filename;
     }
+
+    /**
+     * Allows to upload file by sourcePath.
+     */
+    public function uploadFromPath(string $sourcePath, string $targetFilename): void
+    {
+        $stream = fopen($sourcePath, 'r');
+        $this->publicStorage->writeStream(
+            self::AVATAR_DIRECTORY.'/'.$targetFilename,
+            $stream
+        );
+        if (is_resource($stream)) {
+            fclose($stream);
+        }
+    }
 }

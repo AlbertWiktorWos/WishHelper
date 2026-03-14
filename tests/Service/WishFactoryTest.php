@@ -86,7 +86,6 @@ class WishFactoryTest extends KernelTestCase
         $cache = new ArrayAdapter();
 
         $factory = new WishFactory(
-            $mockSecurity,
             $mockProvider,
             $this->em,
             new NullLogger(),
@@ -97,7 +96,7 @@ class WishFactoryTest extends KernelTestCase
             $this->validator
         );
 
-        $wish = $factory->createByPrompt('something more romantic', true);
+        $wish = $factory->createByPrompt($user->_real(), 'something more romantic', true);
 
         self::assertNotEmpty($this->em->getRepository(WishItem::class)->findOneBy(['title' => 'Mock Wish Item']));
         self::assertInstanceOf(WishItem::class, $wish);
@@ -139,12 +138,9 @@ class WishFactoryTest extends KernelTestCase
             ])
         );
 
-        $mockSecurity = $this->createMock(Security::class);
-        $mockSecurity->method('getUser')->willReturn($user->_real());
         $cache = new ArrayAdapter();
 
         $factory = new WishFactory(
-            $mockSecurity,
             $mockProvider,
             $this->em,
             new NullLogger(),
@@ -155,7 +151,7 @@ class WishFactoryTest extends KernelTestCase
             $this->validator
         );
 
-        $wish = $factory->createByPrompt('test prompt', false);
+        $wish = $factory->createByPrompt($user->_real(), 'test prompt', false);
 
         $this->assertInstanceOf(WishItem::class, $wish);
         self::assertEmpty($this->em->getRepository(WishItem::class)->findAll());
@@ -191,12 +187,9 @@ class WishFactoryTest extends KernelTestCase
             ])
         );
 
-        $mockSecurity = $this->createMock(Security::class);
-        $mockSecurity->method('getUser')->willReturn($user->_real());
         $cache = new ArrayAdapter();
 
         $factory = new WishFactory(
-            $mockSecurity,
             $mockProvider,
             $this->em,
             new NullLogger(),
@@ -207,7 +200,7 @@ class WishFactoryTest extends KernelTestCase
             $this->validator
         );
         $this->expectExceptionMessage('Invalid AI response');
-        $wish = $factory->createByPrompt('test prompt', false);
+        $wish = $factory->createByPrompt($user->_real(), 'test prompt', false);
 
         $this->assertInstanceOf(WishItem::class, $wish);
         self::assertEmpty($this->em->getRepository(WishItem::class)->findAll());

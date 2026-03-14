@@ -21,4 +21,6 @@ class AIWishResponse
 
     #[IsValidCategoryName]
     public ?string $category = null;
+
+    public ?string $tags = null;
 }

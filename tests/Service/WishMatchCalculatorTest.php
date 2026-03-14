@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Mercure\HubInterface;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
 class WishMatchCalculatorTest extends KernelTestCase
@@ -30,11 +31,13 @@ class WishMatchCalculatorTest extends KernelTestCase
     use ResetDatabase;
 
     private WishMatchCalculator $calculator;
+    private HubInterface $hub;
 
     protected function setUp(): void
     {
         $container = static::getContainer();
         $this->calculator = $container->get(WishMatchCalculator::class);
+        $this->hub = $container->get(HubInterface::class);
     }
 
     private function createWishItem(
@@ -185,7 +188,8 @@ class WishMatchCalculatorTest extends KernelTestCase
         $listener = new WishItemSharedListener(
             $em,
             $calculator,
-            $mailer
+            $mailer,
+            $this->hub
         );
 
         $em->flush();
@@ -235,7 +239,7 @@ class WishMatchCalculatorTest extends KernelTestCase
 
         $mailer = $this->createMock(Mailer::class);
 
-        $listener = new WishItemSharedListener($em, $calculator, $mailer);
+        $listener = new WishItemSharedListener($em, $calculator, $mailer, $this->hub);
 
         $em->flush();
         $em->clear();

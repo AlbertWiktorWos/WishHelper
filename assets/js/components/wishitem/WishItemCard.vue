@@ -2,7 +2,26 @@
   <div :class="['card h-100', 'w-100', 'mb-3', item.matchPercentage > 50 ? 'border-accent' : '']">
     <div class="card-body d-flex flex-column position-relative">
 
-      <!-- TITLE -->
+      <!-- TITLE WITH OWNER -->
+      <div v-if="item.owner==='WishHelperBot'" class="d-flex align-items-center mb-3">
+        <img
+            :src="require('@images/avatar_ai.png')"
+            :alt="WishHelperBot"
+            class="rounded-circle border me-2"
+            style="width: 32px; height: 32px; object-fit: cover;"
+        >
+        <span class="small text-muted fw-bold">@WishHelperBot</span>
+      </div>
+      <div v-else class="d-flex align-items-center mb-3">
+        <img
+            :src="userAvatarUrl ?? require('@images/avatar.png')"
+            :alt="item.owner.nickName"
+            class="rounded-circle border me-2"
+            style="width: 32px; height: 32px; object-fit: cover;"
+        >
+        <span class="small text-muted fw-bold">@{{ item.owner.nickName }}</span>
+      </div>
+
       <h5 class="card-title mb-3">{{ item.title || '-' }}</h5>
 
       <!-- PRICE SECTION -->
@@ -29,6 +48,7 @@
           Copy
         </button>
 
+
         <!-- Flash message -->
         <div
             v-if="copied"
@@ -39,42 +59,38 @@
       </div>
 
       <!-- CATEGORY + TAGS + ACTIONS IN ONE ROW -->
-      <div class="d-flex align-items-center justify-content-between mt-3 flex-wrap gap-2">
+      <div class="d-grid d-md-flex align-items-md-center justify-content-md-between mt-3 gap-3">
 
-        <!-- LEFT SIDE: category + tags -->
-        <div class="d-flex align-items-center flex-wrap gap-2">
+        <div class="d-flex align-items-center flex-wrap gap-2 flex-grow-1" style="min-width: 0;">
 
-          <!-- CATEGORY -->
-          <div v-if="item.category" class="d-flex align-items-center">
+          <div v-if="item.category" class="d-flex align-items-center flex-shrink-0 me-2">
             <i v-if="item.category.icon" :class="['bi', item.category.icon]"></i>
-            <span class="ms-2">{{ item.category.name }}</span>
+            <span class="ms-1 text-nowrap fw-medium small">{{ item.category.name }}</span>
           </div>
 
-          <!-- TAGS -->
-          <span
-              v-for="(tag, index) in item.tags"
-              :key="tag.id ?? tag.name + index"
-              class="badge bg-primary"
-          >
-      {{ tag.name }}
-    </span>
-
+          <div class="d-flex flex-nowrap gap-1 overflow-hidden">
+            <span
+                v-for="(tag, index) in item.tags"
+                :key="tag.id ?? tag.name + index"
+                class="badge bg-primary text-truncate"
+                style="max-width: 100px; font-size: 0.75rem;"
+            >
+              {{ tag.name }}
+            </span>
+          </div>
         </div>
 
-        <!-- RIGHT SIDE: buttons -->
-        <div v-if="mode === 'owner'">
-          <div class="d-flex">
-            <button class="btn btn-outline-primary me-2" @click="$emit('edit')">
+        <div class="flex-shrink-0 ms-md-auto">
+          <div v-if="mode === 'owner'" class="d-flex flex-nowrap">
+            <button class="btn btn-outline-primary btn me-2" @click="$emit('edit')">
               Edit
             </button>
-            <button class="btn btn-outline-danger" @click="$emit('delete')">
+            <button class="btn btn-outline-danger btn" @click="$emit('delete')">
               Delete
             </button>
           </div>
-        </div>
-        <div v-else>
-          <div class="d-flex">
-            <button class="btn btn-outline-primary" @click="$emit('copy')">
+          <div v-else class="d-flex flex-nowrap">
+            <button class="btn btn-outline-primary btn px-3" @click="$emit('copy')">
               Copy
             </button>
           </div>
@@ -87,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import {computed, ref} from 'vue'
 
 const props = defineProps({
   mode: 'owner' | 'readonly',
@@ -100,6 +116,17 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'delete'])
 
 const copied = ref(false)
+
+const userAvatarUrl = computed(() => {
+  const avatarFile = props.item.owner?.avatar;
+
+  if (avatarFile) {
+    // We only have the file name in the API so we add the URL
+    return `${window.location.origin}/uploads/avatars/${avatarFile}`;
+  }
+
+  return null;
+})
 
 const copyLink = () => {
   if (!props.item.link) return
@@ -132,7 +159,7 @@ const copyLink = () => {
 
 /* provides some space in the upper right corner for the switch */
 .card-title {
-  padding-right: 3rem;
+  padding-right: 6rem;
 }
 .card-body {
   padding-top: 1rem;

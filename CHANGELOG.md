@@ -1,3 +1,14 @@
+# [BETA]
+## [14.03.2026]
+- Polishing README.md
+- Avatar and nickname of owner displaying on WishItemCard
+- Fixed default router path to ensure correct image URLs when sending emails via Messenger.
+- Improved frontend responsiveness across various devices.
+- Updated the AI frontend component for better performance/UI.
+## [13.03.2026]
+- Enhanced WishItemRecommendation store to support WishItem snapshots for AI-generated items.
+- Migrated AI API processing to background tasks using Messenger.
+- Added and configured Mercure integration.
 ## [11.03.2026]
 -  Reorganization of services and DTOs
 -  AI API assisted wish factory service

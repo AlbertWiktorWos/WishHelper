@@ -2,6 +2,8 @@ twig:
     file_name_pattern: '*.twig'
     paths:
         '%kernel.project_dir%/public': public
+    globals:
+        mercure_hub_url: '%env(MERCURE_PUBLIC_URL)%'
 when@test:
     twig:
         strict_variables: true

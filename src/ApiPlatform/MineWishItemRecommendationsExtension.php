@@ -51,6 +51,10 @@ class MineWishItemRecommendationsExtension implements QueryCollectionExtensionIn
                 '%s.user = :owner',
                 $rootAlias,
             ))
+            ->andWhere(sprintf(
+                '%s.isSeen <> 1',
+                $rootAlias,
+            ))
             ->setParameter('owner', $user);
     }
 }

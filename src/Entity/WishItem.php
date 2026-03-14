@@ -112,7 +112,7 @@ class WishItem
 
     #[ORM\ManyToOne(inversedBy: 'wishItems')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['wish:read'])]
+    #[Groups(['wish:read', 'recommendation:read'])]
     #[Link]
     private ?User $owner = null;
 

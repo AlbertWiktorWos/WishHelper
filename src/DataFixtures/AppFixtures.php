@@ -11,20 +11,37 @@ use App\Factory\UserFactory;
 use App\Factory\WishItemFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class AppFixtures extends Fixture
 {
     // Categories
     public const CATEGORY_HOBBY = ['name' => 'Hobby', 'icon' => 'bi-brush'];
-    public const CATEGORY_ELECTRONICS = ['name' => 'Electronics', 'icon' => 'bi-phone'];
+    public const CATEGORY_ELECTRONICS = ['name' => 'Electronics', 'icon' => 'bi-laptop'];
     public const CATEGORY_BOOKS = ['name' => 'Books', 'icon' => 'bi-book'];
     public const CATEGORY_GAMES = ['name' => 'Games', 'icon' => 'bi-controller'];
+    public const CATEGORY_FASHION = ['name' => 'Fashion', 'icon' => 'bi-bag-heart'];
+    public const CATEGORY_HOME = ['name' => 'Home & Garden', 'icon' => 'bi-house-heart'];
+    public const CATEGORY_SPORTS = ['name' => 'Sports & Outdoors', 'icon' => 'bi-bicycle'];
+    public const CATEGORY_BEAUTY = ['name' => 'Beauty & Health', 'icon' => 'bi-magic'];
+    public const CATEGORY_FOOD = ['name' => 'Food & Drink', 'icon' => 'bi-cup-hot'];
+    public const CATEGORY_TOYS = ['name' => 'Toys & Kids', 'icon' => 'bi-rocket-takeoff'];
+    public const CATEGORY_MUSIC = ['name' => 'Music & Audio', 'icon' => 'bi-music-note-beamed'];
+    public const CATEGORY_TRAVEL = ['name' => 'Travel', 'icon' => 'bi-airplane'];
 
     public const CATEGORIES = [
         self::CATEGORY_HOBBY,
         self::CATEGORY_ELECTRONICS,
         self::CATEGORY_BOOKS,
         self::CATEGORY_GAMES,
+        self::CATEGORY_FASHION,
+        self::CATEGORY_HOME,
+        self::CATEGORY_SPORTS,
+        self::CATEGORY_BEAUTY,
+        self::CATEGORY_FOOD,
+        self::CATEGORY_TOYS,
+        self::CATEGORY_MUSIC,
+        self::CATEGORY_TRAVEL,
     ];
 
     // Currencies
@@ -55,6 +72,8 @@ class AppFixtures extends Fixture
 
     public function __construct(
         private TagCleanupSubscriber $tagCleanupSubscriber,
+        private ParameterBagInterface $parameterBag, // Wee need that to give admin avatar
+        private \App\Service\Infrastructure\FileHelper $fileHelper,
     ) {
     }
 
@@ -105,6 +124,8 @@ class AppFixtures extends Fixture
             'country' => $countries[array_rand($countries)],
             'roles' => ['ROLE_ADMIN'],
             'verified' => true,
+            'nickName' => 'Admin',
+            'avatar' => $this->prepareAdminAvatar(),
         ]);
 
         // --- UŻYTKOWNICY ---
@@ -132,5 +153,20 @@ class AppFixtures extends Fixture
         });
 
         $manager->flush();
+    }
+
+    private function prepareAdminAvatar(): string
+    {
+        // 1. Logika dla plików (Awatary)
+        $projectDir = $this->parameterBag->get('kernel.project_dir');
+        $sourcePath = $projectDir.'/assets/fixtures/admin.png';
+        $adminAvatarFilename = 'admin.png';
+
+        if (file_exists($sourcePath)) {
+            // Wykorzystujemy Twoją nową metodę
+            $this->fileHelper->uploadFromPath($sourcePath, $adminAvatarFilename);
+        }
+
+        return $adminAvatarFilename;
     }
 }

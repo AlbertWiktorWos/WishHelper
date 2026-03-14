@@ -17,7 +17,7 @@
       <!-- clear button -->
       <!-- we set @mousedown.prevent so the blur does not close the dropdown before clicking-->
       <button
-          v-if="modelValue"
+          v-if="modelValue && !disabled"
           type="button"
           class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 p-0 border-0 bg-transparent"
           @mousedown.prevent="onClearSelection"
@@ -40,7 +40,7 @@
           @mousedown.prevent="selectItem(item)"
       >
         <img v-if="item.iconUrl" :src="item.iconUrl" alt="" class="me-2" style="width: 20px; height: 14px; object-fit: cover;">
-        <i v-if="item.icon" :class="['bi', item.icon]"></i>
+        <i v-if="item.icon" :class="['bi', item.icon, 'me-2']"></i>
         <span>{{ item.label }}</span>
 
       </li>
@@ -66,7 +66,8 @@ const props = defineProps({
   type: {type: String, required: true}, // 'country', 'currency', 'category'
   label: {type: String, default: ''}, // field label
   placeholder: {type: String, default: 'Search...'},
-  filedName: {type: String, default: 'search-input'} // filedName for input and hidden field
+  filedName: {type: String, default: 'search-input'}, // filedName for input and hidden field
+  disabled: {type: Boolean, default: false} // disabled mode to prevent showing x symbol
 })
 
 const emit = defineEmits(['update:modelValue']);

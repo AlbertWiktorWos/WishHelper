@@ -20,13 +20,14 @@ class TagService
 
     /**
      * Gets an existing tag or creates a new one if it doesn't exist.
+     * Only lowercased.
      */
     public function getOrCreateTag(string $name): Tag
     {
-        $tag = $this->tagRepository->findOneBy(['name' => $name]);
+        $tag = $this->tagRepository->findOneBy(['name' => strtolower($name)]);
         if (!$tag) {
             $tag = new Tag();
-            $tag->setName($name);
+            $tag->setName(strtolower($name));
         }
 
         return $tag;

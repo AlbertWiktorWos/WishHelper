@@ -23,25 +23,37 @@
       </div>
 
       <div class="toast-body d-flex">
-          {{ message }}
+        {{ message }}
       </div>
+
+      <div v-if="shouldShowButton" class="mt-2 pt-2 border-top text-end p-2">
+        <a :href="redirectLink" class="pointer-event">
+          See details
+          <i class="bi bi-arrow-right-circle"></i>
+        </a>
+      </div>
+
     </div>
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+import {computed, ref} from 'vue'
 
 const visible = ref(false)
 const title = ref('')
 const message = ref('')
 const type = ref('info')
+const redirectLink = ref(null)
 const alertTimeout = ref(null)
 
-function show(header, msg, alertType = 'info', timeout = 3000) {
+function show(header, msg, alertType = 'info', timeout = 5000, redirect) {
 
   // we delete the previous timeout
   if (alertTimeout.value){
     clearTimeout(alertTimeout.value);
+  }
+  if (redirect){
+    redirectLink.value = getRoute(redirect);
   }
 
   title.value = header;
@@ -55,6 +67,29 @@ function show(header, msg, alertType = 'info', timeout = 3000) {
     }, timeout)
   }
 }
+
+function getRoute(routeName) {
+  return window.APP_ROUTES[routeName];
+}
+
+// Logic for checking whether to show a button
+const shouldShowButton = computed(() => {
+  if (!redirectLink.value) return false;
+
+  try {
+    const currentPath = window.location.pathname;
+
+    // Create a URL object from the link to extract only the pathname
+    // If the link is relative (e.g., /wish/show/10), we need to provide the database
+    const targetUrl = new URL(redirectLink.value, window.location.origin);
+
+// We compare paths (ignore domain and query parameters if necessary)
+    return currentPath !== targetUrl.pathname;
+  } catch (e) {
+    return false;
+  }
+})
+
 // we expose show function so it can be use from outside
 defineExpose({ show })
 </script>
@@ -65,6 +100,6 @@ defineExpose({ show })
   bottom: 100px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1080; /* wyżej niż navbar */
+  z-index: 1080; /* higher than the navbar */
 }
 </style>

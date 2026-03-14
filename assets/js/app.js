@@ -11,6 +11,7 @@ import ProfilePage from "@js/pages/ProfilePage.vue";
 import WishItemMinePage from "@js/pages/WishItemMinePage.vue";
 import WishItemSearchPage from "@js/pages/WishItemSearchPage.vue";
 import Toast from "@js/components/Toast.vue";
+import MercureService from "@js/services/MercureService"
 
 const pages = {
     landing: LandingPage,
@@ -37,7 +38,14 @@ if (appElement) {
         app.mount(appElement);
     }
 
-    // mount globalnego alertu
+    // preparing MercureService
+    const userId = window.USER_ID
+    const mercureToken = window.MERCURE_TOKEN
+    if (userId) {
+        MercureService.init(userId, mercureToken)
+    }
+
+    // global alert mount
     const alertElement = document.getElementById('global-toast')
 
     let alertAppInstance = null
@@ -47,10 +55,10 @@ if (appElement) {
         alertAppInstance = alertApp.mount(alertElement)
     }
 
-// globalna funkcja
-    window.$toast = (title, message, type = 'info', timeout = 3000) => {
+    // global function
+    window.$toast = (title, message, type = 'info', timeout = 3000, redirect) => {
         if (alertAppInstance) {
-            alertAppInstance.show(title, message, type, timeout)
+            alertAppInstance.show(title, message, type, timeout, redirect)
         }
     }
 }

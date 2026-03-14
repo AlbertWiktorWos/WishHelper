@@ -5,12 +5,25 @@ namespace App\Entity;
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use App\Enum\RecommendationType;
 use App\Repository\WishItemRecommendationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Patch(security: 'object.getUser() == user'),
+        new Delete(security: 'object.getUser() == user'),
+    ],
     normalizationContext: ['groups' => ['recommendation:read']],
     denormalizationContext: ['groups' => ['recommendation:write']],
     order: ['createdAt' => 'DESC'],
@@ -29,7 +42,7 @@ class WishItemRecommendation
     private ?int $id = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['recommendation:read'])]
     private ?WishItem $wishItem = null;
 
@@ -61,6 +74,14 @@ class WishItemRecommendation
     #[ORM\Column(nullable: true)]
     #[Groups(['recommendation:read'])]
     private ?\DateTimeImmutable $notifiedAt = null;
+
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[Groups(['recommendation:read'])]
+    private ?array $wishSnapshot = null;
+
+    #[ORM\Column(enumType: RecommendationType::class)]
+    #[Groups(['recommendation:read'])]
+    private RecommendationType $type;
 
     public function __construct()
     {
@@ -152,6 +173,28 @@ class WishItemRecommendation
     public function setNotifiedAt(?\DateTimeImmutable $notifiedAt): static
     {
         $this->notifiedAt = $notifiedAt;
+
+        return $this;
+    }
+
+    public function getWishSnapshot(): ?array
+    {
+        return $this->wishSnapshot;
+    }
+
+    public function setWishSnapshot(?array $wishSnapshot): void
+    {
+        $this->wishSnapshot = $wishSnapshot;
+    }
+
+    public function getType(): RecommendationType
+    {
+        return $this->type;
+    }
+
+    public function setType(RecommendationType $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }
